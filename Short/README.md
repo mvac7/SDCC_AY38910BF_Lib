@@ -1,4 +1,4 @@
-# PSG AY-3-8910 BF MSX SDCC Library (fR3eL Project)
+# PSG AY-3-8910 BF Short MSX SDCC Library (fR3eL Project)
 
 ```
 Author: mvac7
@@ -9,6 +9,7 @@ Programming language: C and Z80 assembler
 
 
 ---
+
 ## Description
 
 This project is an opensource library functions for access to internal or external MSX PSG AY-3-8910. 
@@ -17,17 +18,14 @@ Designed for developing MSX applications using Small Device C Compiler (SDCC).
   
 It does not use the BIOS so it can be used to program both ROMs or MSX-DOS executables.
   
-This library is similar to the [PSG AY-3-8910 RT](https://github.com/mvac7/SDCC_AY38910RT_Lib), but instead of writing directly to the registers, 
-it does so to a buffer that should be dumped to the AY in each VBLANK frame.
+This library is a Short version of the AY38910BF where the definitions and functions necessary to work with player libraries have been left. 
+It is lighter, leaving room for development.
+
+Provides a record buffer that must be dumped in each VBLANK frame to the AY-3-8910 (internal or external) using the PlayAY function. 
 
 It is designed to work together with the PT3player and/or ayFXplayer libraries, but you can also use it for your own or third-party player.
 
-In this same repository you will find a **short version** [(AY38910BF_S)](https://github.com/mvac7/SDCC_AY38910BF_Lib/tree/main/Short) with the essentials to work with player libraries.
-
 ![AY Sound System](https://raw.githubusercontent.com/mvac7/SDCC_AY38910BF_Lib/master/doc/AYlibs.png)
-
-It incorporates the SOUND function with the same behavior as the command included in MSX BASIC, 
-as well as specific functions to modify the different sound parameters of the AY. 
 
 Controls the I/O bits of register 7 (Mixer), of the internal AY.
 
@@ -38,10 +36,6 @@ This type uses the values "ON" or "OFF", which equals 1 and 0 respectively.
 
 Include definitions to improve the readability of your programs.
 
-In the source code (\examples), you can find applications for testing and learning purposes.
-
-![TEST AY Lib](https://raw.githubusercontent.com/mvac7/SDCC_AY38910BF_Lib/master/examples/test01_ROM/GFX/TESTAYBF_screenshot.png) 
-
 This library is part of the [MSX fR3eL Project](https://github.com/mvac7/SDCC_MSX_fR3eL).
 
 Enjoy it!                           
@@ -50,7 +44,7 @@ Enjoy it!
 
 ## History of versions
 
-* v0.9b (07 July 2021) First version (Based in AY-3-8910 RT Library)
+* v0.9b (16 July 2021) First version (Short version from AY38910BF Library)
 
 
 
@@ -58,7 +52,6 @@ Enjoy it!
 
 * Small Device C Compiler (SDCC) v4.1 > http://sdcc.sourceforge.net/
 * Hex2bin v2.5 http://hex2bin.sourceforge.net/
-
 
 
 
@@ -124,18 +117,10 @@ AY_Channel_B | 1
 AY_Channel_C | 2
 
 
- 
+
 ## Functions
 
 * **AY_Init**() - Initialize the buffer
-* **SOUND**(register, value) - Write into a register of PSG
-* **GetSound**(register) - Read PSG register value
-* **SetTonePeriod**(channel, period) - Set Tone Period for any channel
-* **SetNoisePeriod**(period) - Set Noise Period
-* **SetEnvelopePeriod**(period) - Set Envelope Period
-* **SetVolume**(channel, volume) - Set volume channel
-* **SetChannel**(channel, isTone, isNoise) - Mixer. Enable/disable Tone and Noise channels.
-* **SetEnvelope**(shape) - Set envelope type. Plays the sound on channels that have a volume of 16.
 * **PlayAY**() - Send data from AYREGS buffer to AY registers. (Execute on each interruption of VBLANK).
 
 
@@ -153,9 +138,6 @@ To select an external AY (ports 10h to 12h), like the one included in the MegaFl
 
 
 
----
-
-
 ## How to use this
 
 coming soon...
@@ -163,7 +145,6 @@ coming soon...
 
 
 
----
 
 ## AY-3-8910 Register Table
 
@@ -252,6 +233,7 @@ I want to give a special thanks to all those who freely share their knowledge wi
 
 
 ---
+
 ## References
 
 * [General Instrument AY-3-8910 (wikipedia)](https://en.wikipedia.org/wiki/General_Instrument_AY-3-8910)
