@@ -20,7 +20,7 @@ It does not use the BIOS so it can be used to program both ROMs or MSX-DOS execu
 This library is similar to the [PSG AY-3-8910 RT](https://github.com/mvac7/SDCC_AY38910RT_Lib), but instead of writing directly to the registers, 
 it does so to a buffer that should be dumped to the AY in each VBLANK frame.
 
-It is designed to work together with the PT3player and/or ayFXplayer libraries, but you can also use it for your own or third-party player.
+It is designed to work together with the [PT3player](https://github.com/mvac7/SDCC_PT3player) and/or [ayFXplayer](https://github.com/mvac7/SDCC_ayFXplayer) libraries, but you can also use it for your own or third-party player.
 
 In this same repository you will find a **short version** [(AY38910BF_S)](https://github.com/mvac7/SDCC_AY38910BF_Lib/tree/main/Short) with the essentials to work with player libraries.
 
@@ -58,6 +58,44 @@ Enjoy it!
 
 * Small Device C Compiler (SDCC) v4.1 > http://sdcc.sourceforge.net/
 * Hex2bin v2.5 http://hex2bin.sourceforge.net/
+
+
+---
+
+## Acknowledgments
+  
+I want to give a special thanks to all those who freely share their knowledge with the MSX developer community.
+
+* Avelino Herrera > [(WEB)](http://msx.avelinoherrera.com)
+* Nerlaska > [(Blog)](http://albertodehoyonebot.blogspot.com.es)
+* Marq > [(Marq)](http://www.kameli.net/marq/)
+* MSXKun/Paxanga soft > [(WEB)](http://paxangasoft.retroinvaders.com/)
+* Fubukimaru [(gitHub)](https://github.com/Fubukimaru)
+* Andrear > [(Blog)](http://andrear.altervista.org/home/msxsoftware.php)
+* Sapphire/Z80ST > [(WEB)](http://z80st.auic.es/)
+* Fernando García > [(Curso)](http://www.z80st.es/cursos/bitvision-assembler)
+* Ramones > [(MSXblog)](https://www.msxblog.es/tutoriales-de-programacion-en-ensamblador-ramones/) - [(MSXbanzai)](http://msxbanzai.tni.nl/dev/faq.html)
+* Eric Boez > [(gitHub)](https://github.com/ericb59)
+* MSX Assembly Page > [(WEB)](http://map.grauw.nl/resources/msxbios.php)
+* Portar MSX Tech Doc > [(WEB)](https://problemkaputt.de/portar.htm)
+* MSX Resource Center [Development Wiki](https://www.msx.org/wiki/#Developing_for_MSX)
+* Karoshi MSX Community > [(WEB)](http://karoshi.auic.es/)
+* BlueMSX emulator >> [(WEB)](http://www.bluemsx.com/)
+* OpenMSX emulator >> [(WEB)](http://openmsx.sourceforge.net/)
+* [WebMSX](https://webmsx.org/) emulator by Paulo A. Peccin >> [(gitHub)](https://github.com/ppeccin/webmsx)
+* fMSX emulator by Marat Fayzullin [WEB](https://fms.komkon.org/fMSX/)
+* Meisei emulator >> ?
+
+ 
+<br/>
+
+---
+ 
+
+
+
+
+
 
 
 
@@ -164,8 +202,9 @@ coming soon...
 
 
 ---
+## Appendices
 
-## AY-3-8910 Register Table
+### AY-3-8910 Register Table
 
 <table>
 <tr>
@@ -225,31 +264,7 @@ coming soon...
 </tr>
 </table>
 
-
----
-
-## Acknowledgments
-  
-I want to give a special thanks to all those who freely share their knowledge with the MSX developer community.
-
-* Avelino Herrera > [(WEB)](http://msx.avelinoherrera.com)
-* Nerlaska > [(Blog)](http://albertodehoyonebot.blogspot.com.es)
-* Marq > [(Marq)](http://www.kameli.net/marq/)
-* MSXKun/Paxanga soft > [(WEB)](http://paxangasoft.retroinvaders.com/)
-* Fubukimaru [(gitHub)](https://github.com/Fubukimaru)
-* Andrear > [(Blog)](http://andrear.altervista.org/home/msxsoftware.php)
-* Sapphire/Z80ST > [(WEB)](http://z80st.auic.es/)
-* Fernando García > [(Curso)](http://www.z80st.es/cursos/bitvision-assembler)
-* Ramones > [(MSXblog)](https://www.msxblog.es/tutoriales-de-programacion-en-ensamblador-ramones/) - [(MSXbanzai)](http://msxbanzai.tni.nl/dev/faq.html)
-* Eric Boez > [(gitHub)](https://github.com/ericb59)
-* MSX Assembly Page > [(WEB)](http://map.grauw.nl/resources/msxbios.php)
-* Portar MSX Tech Doc > [(WEB)](https://problemkaputt.de/portar.htm)
-* MSX Resource Center [Development Wiki](https://www.msx.org/wiki/#Developing_for_MSX)
-* Karoshi MSX Community > [(WEB)](http://karoshi.auic.es/)
-* BlueMSX emulator >> [(WEB)](http://www.bluemsx.com/)
-* OpenMSX emulator >> [(WEB)](http://openmsx.sourceforge.net/)
-* Meisei emulator >> ?
-
+<br/>
 
 ---
 ## References
