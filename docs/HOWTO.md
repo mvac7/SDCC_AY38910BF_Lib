@@ -6,28 +6,29 @@
 
 - [1 Description](#1-Description)
 - [2 Requirements](#2-Requirements)
-- [3 Definitions](#3-Definitions)
-   - [3.1 SWITCHER Type](#31-SWITCHER-Type)
-   - [3.2 AY Type](#32-AY-Type)
-   - [3.3 AY Registers](#33-AY-Registers)
-   - [3.4 Envelope shapes](#34-Envelope-shapes)
-   - [3.5 AY channels](#35-AY-channels)
-- [4 Functions](#4-Functions)
-   - [4.1 AY_Init](#41-AY_Init)
-   - [4.2 SOUND](#42-SOUND)
-   - [4.3 GetSound](#43-GetSound)
-   - [4.4 SetTonePeriod](#44-SetTonePeriod)
-   - [4.5 SetNoisePeriod](#45-SetNoisePeriod)
-   - [4.6 SetEnvelopePeriod](#46-SetEnvelopePeriod)
-   - [4.7 SetVolume](#47-SetVolume)
-   - [4.8 SetChannel](#48-SetChannel)
-   - [4.9 PlayEnvelope](#49-PlayEnvelope)
-   - [4.10 PlayAY](#410-PlayAY)
-- [5 Set Internal or External AY](#5-Set-Internal-or-External-AY)
-- [6 How to use this](#6-How-to-use-this)
-- [7 Appendices](#7-Appendices)
-   - [7.1 AY-3-8910 Register Table](#71-AY-3-8910-Register-Table)  
-- [8 References](#8-References)
+- [3 AY Sound System](#3-AY-Sound-System)
+- [4 Definitions](#4-Definitions)
+   - [4.1 SWITCHER Type](#41-SWITCHER-Type)
+   - [4.2 AY Type](#42-AY-Type)
+   - [4.3 AY Registers](#43-AY-Registers)
+   - [4.4 Envelope shapes](#44-Envelope-shapes)
+   - [4.5 AY channels](#45-AY-channels)
+- [5 Functions](#5-Functions)
+   - [5.1 AY_Init](#51-AY_Init)
+   - [5.2 SOUND](#52-SOUND)
+   - [5.3 GetSound](#53-GetSound)
+   - [5.4 SetTonePeriod](#54-SetTonePeriod)
+   - [5.5 SetNoisePeriod](#55-SetNoisePeriod)
+   - [5.6 SetEnvelopePeriod](#56-SetEnvelopePeriod)
+   - [5.7 SetVolume](#57-SetVolume)
+   - [5.8 SetChannel](#58-SetChannel)
+   - [5.9 PlayEnvelope](#59-PlayEnvelope)
+   - [5.10 PlayAY](#510-PlayAY)
+- [6 Set Internal or External AY](#6-Set-Internal-or-External-AY)
+- [7 How to use](#7-How-to-use)
+- [8 Appendices](#8-Appendices)
+   - [8.1 AY-3-8910 Register Table](#81-AY-3-8910-Register-Table)  
+- [9 References](#9-References)
 
 
 <br/>
@@ -46,8 +47,6 @@ it does so to a buffer that should be dumped to the AY in each VBLANK frame.
 It is designed to work together with the [PT3player](https://github.com/mvac7/SDCC_PT3player) and/or [ayFXplayer](https://github.com/mvac7/SDCC_ayFXplayer) libraries, but you can also use it for your own or third-party player.
 
 In this same repository you will find a **short version** [(AY38910BF_S)](https://github.com/mvac7/SDCC_AY38910BF_Lib/tree/main/Short) with the essentials to work with player libraries.
-
-![AY Sound System](AYlibs.png)
 
 It incorporates the SOUND function with the same behavior as the command included in MSX BASIC, 
 as well as specific functions to modify the different sound parameters of the AY. 
@@ -83,10 +82,20 @@ Enjoy it!
 
 ---
 
-## 3 Definitions
+## 3 AY Sound System
+
+The [`AY38910BF`](https://github.com/mvac7/SDCC_AY38910BF_Lib), [`PT3player`](https://github.com/mvac7/SDCC_AY38910BF_Lib) and [`ayFXplayer`](https://github.com/mvac7/SDCC_ayFXplayer) libraries are designed to work together, so you will have a system to provide music and effects in game development.
+
+![AY Sound System](https://raw.githubusercontent.com/mvac7/SDCC_AY38910BF_Lib/master/docs/AYlibs.png)
+
+<br/>
+
+---
+
+## 4 Definitions
 
 
-### 3.1 SWITCHER Type 
+### 4.1 SWITCHER Type 
 
 Data type definition to be used in switches (same as boolean type).
 
@@ -96,7 +105,7 @@ OFF   | 0
 ON    | 1
 
 
-### 3.2 AY Type 
+### 4.2 AY Type 
 
 Label | Value
 :---  | ---:  
@@ -104,7 +113,7 @@ AY_INTERNAL | 0
 AY_EXTERNAL | 1
 
 
-### 3.3 AY Registers
+### 4.3 AY Registers
 
 Label | Value | Description
 :---  | ---:  | :--- 
@@ -120,7 +129,7 @@ AY_EnvPeriod | 11 | Envelope Period (16 bits)
 AY_EnvShape  | 13 | Envelope Shape
 
 
-### 3.4 Envelope shapes
+### 4.4 Envelope shapes
 
 The header file defines envelope shapes in case you prefer to use it instead 
 of the numerical form:
@@ -144,7 +153,7 @@ The Upper shape may be produced with the values: 4, 5, 6, 7 and 15.
 
 
 
-### 3.5 AY channels
+### 4.5 AY channels
 
 You can use it in the functions: SetTonePeriod, SetVolume and SetChannel
 
@@ -158,9 +167,9 @@ AY_Channel_C | 2
 
 ---
  
-## 4 Functions
+## 5 Functions
 
-### 4.1 AY_Init
+### 5.1 AY_Init
 
 <table>
 <tr><th colspan=2 align="left">AY_Init</th></tr>
@@ -168,12 +177,11 @@ AY_Channel_C | 2
 <tr><th>Function</th><td>AY_Init()</td></tr>
 <tr><th>Input</th><td> --- </td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th>
-<td><pre>AY_Init();</pre></td></tr>
+<tr><th>Examples:</th><td><pre>AY_Init();</pre></td></tr>
 </table>
 
 
-### 4.2 SOUND
+### 5.2 SOUND
 
 <table>
 <tr><th colspan=2 align="left">SOUND</th></tr>
@@ -182,12 +190,10 @@ AY_Channel_C | 2
 <tr><th>register</th><td>[char] register number (0 to 13)</td></tr>
 <tr><th>value</th><td>[char] value</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>Sound(8,16); //channel A envelope on</code></pre>
-</td></tr>
+<tr><th>Examples:</th><td><pre>Sound(8,16); //channel A envelope on</pre></td></tr>
 </table>
 
-### 4.3 GetSound
+### 5.3 GetSound
 
 <table>
 <tr><th colspan=2 align="left">GetSound</th></tr>
@@ -195,13 +201,14 @@ AY_Channel_C | 2
 <tr><th>Function</th><td>GetSound(register)</td></tr>
 <tr><th>register</th><td>[char] register number (0 to 13)</td></tr>
 <tr><th>Output</th><td>[char] value</td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>char value;            
-value = GetSound(7);  //read mixer register</code></pre>
-</td></tr>
+<tr><th>Examples:</th>
+<td><pre>
+char value;            
+value = GetSound(7);  //read mixer register
+</pre></td></tr>
 </table>
 
-### 4.4 SetTonePeriod
+### 5.4 SetTonePeriod
 
 <table>
 <tr><th colspan=2 align="left">SetTonePeriod</th></tr>
@@ -210,12 +217,10 @@ value = GetSound(7);  //read mixer register</code></pre>
 <tr><th>channel</th><td>[char] channel (0, 1 or 2)</td></tr>
 <tr><th>period</th><td>[unsigned int] period (0 - 4095)</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>SetTonePeriod(AY_Channel_B,1100);  //set tone period for channel A</code></pre>
-</td></tr>
+<tr><th>Examples:</th><td><pre>SetTonePeriod(AY_Channel_B,1100);  //set tone period for channel A</pre></td></tr>
 </table>
 
-### 4.5 SetNoisePeriod
+### 5.5 SetNoisePeriod
 
 <table>
 <tr><th colspan=2 align="left">SetNoisePeriod</th></tr>
@@ -223,12 +228,10 @@ value = GetSound(7);  //read mixer register</code></pre>
 <tr><th>Function</th><td>SetNoisePeriod(period)</td></tr>
 <tr><th>period</th><td>[char] Noise period (0 - 31)</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>SetNoisePeriod(10);</code></pre>
-</td></tr>
+<tr><th>Examples:</th><td><pre>SetNoisePeriod(10);</pre></td></tr>
 </table>
 
-### 4.6 SetEnvelopePeriod
+### 5.6 SetEnvelopePeriod
 
 <table>
 <tr><th colspan=2 align="left">SetEnvelopePeriod</th></tr>
@@ -236,12 +239,10 @@ value = GetSound(7);  //read mixer register</code></pre>
 <tr><th>Function</th><td>SetEnvelopePeriod(period)</td></tr>
 <tr><th>period</th><td>[unsigned int] Envelope period (0 - 65535)</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>SetEnvelopePeriod(1000);</code></pre>
-</td></tr>
+<tr><th>Examples:</th><td><pre>SetEnvelopePeriod(1000);</pre></td></tr>
 </table>
 
-### 4.7 SetVolume
+### 5.7 SetVolume
 
 <table>
 <tr><th colspan=2 align="left">SetVolume</th></tr>
@@ -250,13 +251,14 @@ value = GetSound(7);  //read mixer register</code></pre>
 <tr><th>channel</th><td>[char] channel (0, 1 or 2)</td></tr>
 <tr><th>volume</th><td>[char] volume, 0 to 15 or 16 for activate envelope</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>SetVolume(0,14);  // set 14 volume level for channel A
-SetVolume(1,16);  // activate envelope for channel B</code></pre>
-</td></tr>
+<tr><th>Examples:</th>
+<td><pre>
+SetVolume(0,14);  // set 14 volume level for channel A
+SetVolume(1,16);  // activate envelope for channel B
+</pre></td></tr>
 </table>
 
-### 4.8 SetChannel
+### 5.8 SetChannel
 
 <table>
 <tr><th colspan=2 align="left">SetChannel</th></tr>
@@ -266,14 +268,15 @@ SetVolume(1,16);  // activate envelope for channel B</code></pre>
 <tr><th>isTone</th><td>[SWITCHER] Tone channel state</td></tr>
 <tr><th>isNoise</th><td  width=300>[SWITCHER] Noise channel state</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>SetChannel(0,true,false);
+<tr><th>Examples:</th>
+<td><pre>
+SetChannel(0,true,false);
 SetChannel(1,true,true);
-SetChannel(2,false,false);</code></pre>
-</td></tr>
+SetChannel(2,false,false);
+</pre></td></tr>
 </table>
 
-### 4.9 PlayEnvelope
+### 5.9 PlayEnvelope
 
 <table>
 <tr><th colspan=2 align="left">PlayEnvelope</th></tr>
@@ -281,14 +284,14 @@ SetChannel(2,false,false);</code></pre>
 <tr><th>Function</th><td>PlayEnvelope(shape)</td></tr>
 <tr><th>shape</th><td>[char] Envelope shape (0-15)</td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th><td>
-<pre><code>PlayEnvelope(0); //Play LowerBeat envelope shape
-<br/>           
-PlayEnvelope(ENV_LowerTriangle); //Play LowerTriangle envelope shape</code></pre>
-</td></tr>
+<tr><th>Examples:</th>
+<td><pre>
+PlayEnvelope(0); //Play LowerBeat envelope shape
+PlayEnvelope(ENV_LowerTriangle); //Play LowerTriangle envelope shape
+</pre></td></tr>
 </table>
 
-### 4.10 PlayAY
+### 5.10 PlayAY
 
 <table>
 <tr><th colspan=2 align="left">PlayAY</th></tr>
@@ -296,8 +299,7 @@ PlayEnvelope(ENV_LowerTriangle); //Play LowerTriangle envelope shape</code></pre
 <tr><th>Function</th><td>PlayAY()</td></tr>
 <tr><th>Input</th><td> --- </td></tr>
 <tr><th>Output</th><td> --- </td></tr>
-<tr><th>Examples:</th>
-<td><pre>PlayAY();</pre></td></tr>
+<tr><th>Examples:</th><td><pre>PlayAY();</pre></td></tr>
 </table>
 
 
@@ -305,7 +307,7 @@ PlayEnvelope(ENV_LowerTriangle); //Play LowerTriangle envelope shape</code></pre
 
 ---
 
-## 5 Set Internal or External AY
+## 6 Set Internal or External AY
 
 To indicate in which PSG the sounds are to be played, you have the **AY_TYPE** variable. 
 To select an external AY (ports 10h to 12h), like the one included in the MegaFlashROM SCC+, Flashjacks or other, you have to set the variable to 1 (or AY_EXTERNAL).
@@ -323,7 +325,7 @@ To select an external AY (ports 10h to 12h), like the one included in the MegaFl
 ---
 
 
-## 6 How to use this
+## 7 How to use
 
 coming soon...
 
@@ -332,9 +334,9 @@ coming soon...
 
 ---
 
-## 7 Appendices
+## 8 Appendices
 
-### 7.1 AY-3-8910 Register Table
+### 8.1 AY-3-8910 Register Table
 
 <table>
 <tr>
@@ -398,7 +400,7 @@ coming soon...
 
 ---
 
-## 8 References
+## 9 References
 
 * [General Instrument AY-3-8910 (wikipedia)](https://en.wikipedia.org/wiki/General_Instrument_AY-3-8910)
 * [GI AY-3-8910 Datasheet (PDF)](http://map.grauw.nl/resources/sound/generalinstrument_ay-3-8910.pdf)
