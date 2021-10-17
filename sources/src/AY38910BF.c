@@ -183,8 +183,7 @@ void SetChannel(char channel, SWITCHER isTone, SWITCHER isNoise)
   newValue = AYREGS[7];
   
    
-  //el control de los dos bits de I/O del registro 7 
-  //se hace en la función Sound
+  //control of the two I/O bits of register 7 is done in the SOUND function
   if(channel==0) 
   {
       if(isTone==ON){newValue&=254;}else{newValue|=1;}
