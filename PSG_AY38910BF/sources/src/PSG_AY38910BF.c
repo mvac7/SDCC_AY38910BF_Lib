@@ -60,9 +60,9 @@ __asm
 	ld   (#_AY_IOport),A
 
 ;Clear PSG buffer
-ClearDefAYbuffer::
+_ClearDefAYbuffer::
 	LD   HL,#_AYREGS
-AY_ClearBuffer::
+_ClearAYbuffer::
 	ld   D,H
 	ld   E,L
 	inc  DE
@@ -72,7 +72,7 @@ AY_ClearBuffer::
 
 ;disable envelope
 ;    ld   A,#0b10000000
-    LD   (HL),#0b10000000		;reg 13 envelpe shape
+    LD   (HL),#0b10000000		;reg 13 disable envelpe shape
     
     ret
 __endasm;

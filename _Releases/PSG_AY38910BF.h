@@ -77,6 +77,28 @@ void InitAY(void);
 
 
 /* =============================================================================
+ClearDefAYbuffer
+
+Function:	Clear default AY buffer (AYREGS).
+Input   :	-
+Output  :	-
+============================================================================= */
+extern void ClearDefAYbuffer(void);
+
+
+
+/* =============================================================================
+ClearAYbuffer
+
+Function:	Clear indicated AY buffer.
+Input   :	[unsigned int] buffer address of AY registers
+Output  :	-
+============================================================================= */
+extern void ClearAYbuffer(unsigned int bufferADDR);
+
+
+
+/* =============================================================================
 SOUND
 
 Function:	Writes a value to the PSG register buffer

@@ -1,6 +1,6 @@
 /* =============================================================================
 PSG_AY38910BF
-PSG AY-3-8910 Buffer MSX SDCC Library version (fR3eL Project)
+PSG AY-3-8910 Buffer MSX SDCC Library (fR3eL Project)
 ============================================================================= */
 
 #ifndef  __AY38910BF_H__
@@ -73,6 +73,28 @@ Input   :	-
 Output  :	-
 ============================================================================= */
 void InitAY(void);
+
+
+
+/* =============================================================================
+ClearDefAYbuffer
+
+Function:	Clear default AY buffer (AYREGS).
+Input   :	-
+Output  :	-
+============================================================================= */
+extern void ClearDefAYbuffer(void);
+
+
+
+/* =============================================================================
+ClearAYbuffer
+
+Function:	Clear indicated AY buffer.
+Input   :	[unsigned int] buffer address of AY registers
+Output  :	-
+============================================================================= */
+extern void ClearAYbuffer(unsigned int bufferADDR);
 
 
 
