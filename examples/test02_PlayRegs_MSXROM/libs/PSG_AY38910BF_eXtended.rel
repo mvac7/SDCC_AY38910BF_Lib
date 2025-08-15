@@ -1,6 +1,6 @@
 XL3
 H 9 areas 8 global symbols
-M PSG_AY38910BF_Xfunctions
+M PSG_AY38910BF_eXtended
 O -mz80
 S .__.ABS. Def000000
 S _AYREGS Ref000000

@@ -52,15 +52,11 @@ Security control of the I/O port enable bits in the Mixer register.
 On some MSX computers that incorporate an AY-3-8910, they may be damaged if incorrect activation values ​​are written.
 This library reads the port trigger values ​​and persists them, every time the PlayAY function is executed.
 
-You can access the documentation here with [`How to use the library`](docs/HOWTO.md).
-
-In the source code [`examples/`](examples/), you can find applications for testing and learning purposes.
-
 These libraries are part of the [MSX fR3eL Project](https://github.com/mvac7/SDCC_MSX_fR3eL).
 
 Use them for developing MSX applications using Small Device C Compiler [`SDCC`](http://sdcc.sourceforge.net/).
 
-This project is an Open Source. 
+This project is open source under the [MIT license](LICENSE).<br/>
 You can add part or all of this code in your application development or include it in other libraries/engines.
 
 Enjoy it!                         
@@ -109,7 +105,7 @@ ON    | 1
 Label | Value | Description
 :---  | :---  | :--- 
 AY_INTERNAL | 0xA0 | Internal MSX PSG
-AY_EXTERNAL | 0x10 | MEGAFLASHROM SCC+, Flashjacks or others
+AY_EXTERNAL | 0x10 | MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others
 
 <br/>
 
@@ -519,7 +515,7 @@ This is the way to go when using song players like PT3player.
 ### Using two AYs
 
 This library provides functionality to use a second external AY sound processor.
-This may come included in hardware such as the MEGAFLASHROM SCC+, Flashjacks, Carnivore2 or others.
+This may come included in hardware such as the MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others.
 It allows dumping data from the main buffer or a second buffer to either of the two PSGs.
 
 
@@ -725,6 +721,15 @@ hex2bin -e bin -l 4000 Test1_2AY.ihx
 
 * [General Instrument AY-3-8910 (wikipedia)](https://en.wikipedia.org/wiki/General_Instrument_AY-3-8910)
 * [GI AY-3-8910 Datasheet (PDF)](http://map.grauw.nl/resources/sound/generalinstrument_ay-3-8910.pdf)
+
+<br/>
+
+### External Hardware
+
+* [MEGAFLASHROM SCC+](https://www.msxcartridgeshop.com/) by MSX Cartridge Shop
+* [Yamanooto Specs](https://www.msx.org/wiki/The_SCC_Alliance_Yamanooto) (MRC Wiki) by The SCC Alliance
+* [FlashJacks](https://www.retromsx.com/todo-flashjacks/) by Aquijacks
+* [Carnivore2](https://sysadminmosaic.ru/en/msx/carnivore2/carnivore2?redirect=1#sound_settings) by RBSC
 
 <br/>
 

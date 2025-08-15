@@ -1,5 +1,5 @@
 #include "../include/PSG_AY38910BF.h"
-#include "../include/PSG_AY38910BF_Xfunctions.h"
+#include "../include/PSG_AY38910BF_eXtended.h"
 
 #define  HALT	 __asm halt __endasm
 

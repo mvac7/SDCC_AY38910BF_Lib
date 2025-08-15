@@ -1,5 +1,5 @@
 /* =============================================================================
-PSG_AY38910BF_Xfunctions
+PSG_AY38910BF_eXtended
 PSG AY-3-8910 Buffer eXtended functions MSX SDCC Library (fR3eL Project)
 ============================================================================= */
 #ifndef  __AY38910BF_Xfunc_H__

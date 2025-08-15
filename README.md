@@ -1,10 +1,13 @@
-# PSG AY-3-8910 BF MSX SDCC Library (fR3eL Project)
+# PSG AY-3-8910 BF MSX SDCC Libraries (fR3eL Project)
 
 <table>
+<tr><td rowspan=2>Name</td><td>PSG_AY38910BF</td></tr>
+<tr><td>PSG_AY38910BF_eXtended</td></tr>
 <tr><td>Architecture</td><td>MSX</td></tr>
-<tr><td>Format</td><td>C Object (SDCC .rel)</td></tr>
-<tr><td>Programming language</td><td>C and Z80 assembler</td></tr>
-<tr><td>Compiler</td><td>SDCC v4.4 or newer</td></tr>
+<tr><td>Environment</td><td>ROM, MSX-DOS, MSX BASIC</td></tr>
+<tr><td>Programming language</td><td>C</td></tr>
+<tr><td>Format</td><td>SDCC Relocatable object file (.rel)</td></tr>
+<tr><td>Compiler</td><td>SDCC v4.4</td></tr>
 </table>
 
 
@@ -12,17 +15,11 @@
 
 ## Description
 
-Library of functions to be able to play sounds and/or music with the PSG AY-3-8910.
-
-This library is designed to work with other libraries that use a buffer of AY registers (such as [PT3player](https://github.com/mvac7/SDCC_PT3player) and/or [ayFXplayer](https://github.com/mvac7/SDCC_ayFXplayer)). 
-Includes a function that safely dumps buffer values ​​to an AY-3-8910 PSG.
-It allows to use the internal PSG of the MSX or an external one (like the one incorporated in the MEGAFLASHROM SCC+, Flashjacks, Carnivore2 or others).
-
-![AY Sound System](docs/AYlibs.png)
+C function library with functions to be able to play sounds and/or music with the PSG AY-3-8910.
 
 This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
-- **PSG_AY38910BF_Xfunctions** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
+- **PSG_AY38910BF_eXtended** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
 
 It does not use the BIOS so it can be used to program for ROMs, MSX BASIC or MSX-DOS environments.
 
@@ -43,7 +40,7 @@ These libraries are part of the [MSX fR3eL Project](https://github.com/mvac7/SDC
 
 Use them for developing MSX applications using Small Device C Compiler [`SDCC`](http://sdcc.sourceforge.net/).
 
-This project is an Open Source. 
+This project is open source under the [MIT license](LICENSE).<br/>
 You can add part or all of this code in your application development or include it in other libraries/engines.
 
 Enjoy it!
@@ -54,14 +51,14 @@ Enjoy it!
 
 ## History of versions
 
-### PSG_AY38910BF
+### PSG_AY38910BF Library
 
 - v1.0  (08/02/2025) update to SDCC (4.1.12) Z80 calling conventions
 - v0.9b (16/07/2021) First version (Based in AY-3-8910 RT Library)
 
 <br/>
 
-### PSG_AY38910BF_Xfunctions
+### PSG_AY38910BF_eXtended Library
 
 - v1.0  (03/03/2025) First version
 
@@ -78,9 +75,21 @@ Enjoy it!
 
 ---
 
+## fR3eL Sound System
+
+This library is designed to work with other libraries that use a buffer of AY registers (such as [PT3player](https://github.com/mvac7/SDCC_PT3player) and/or [ayFXplayer](https://github.com/mvac7/SDCC_ayFXplayer)). 
+Includes a function that safely dumps buffer values ​​to an AY-3-8910 PSG.
+It allows to use the internal PSG of the MSX or an external one (like the one incorporated in the MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others).
+
+![AY Sound System](docs/AYlibs.png) 
+
+<br/>
+
+---
+
 ## Functions
 
-### PSG_AY38910BF
+### PSG_AY38910BF Library
 
 | Name | Declaration | Description |
 | ---  | ---         | ---         |
@@ -94,7 +103,7 @@ Enjoy it!
 
 <br/>
 
-### PSG_AY38910BF_Xfunctions
+### PSG_AY38910BF_eXtended Library
 
 | Name | Declaration | Description |
 | ---  | ---         | ---         |
@@ -104,4 +113,3 @@ Enjoy it!
 | SetVolume         | `SetVolume(char channel, char volume)` | Set volume channel |
 | SetChannel        | `SetChannel(char channel, switcher isTone, switcher isNoise)` | Mixer. Enable/disable Tone and Noise channels |
 | SetEnvelope       | `SetEnvelope(char shape)` | Set envelope shape |
-

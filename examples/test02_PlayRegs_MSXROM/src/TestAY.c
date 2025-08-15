@@ -1,5 +1,5 @@
 /* =============================================================================
-Test AY38910BF MSX Library (fR3eL Project)
+# Test AY38910BF MSX Library (fR3eL Project)
 
 Version: 1.1 (07/02/2025)
 Author: mvac7/303bcn
@@ -8,13 +8,11 @@ Format: MSX 16K ROM
 Programming language: C and Z80 assembler
 Compiler: SDCC 4.4 or newer
 
-Description:
- This library is based on writing in a buffer the values of the AY 
- registers and copying them in each VBLANK interrupt.
- 
- It is similar to the PSG AY-3-8910 RT library  
-  
-History of versions: (dd/mm/yy)
+## Description:
+This library is based on writing in a buffer the values of the AY 
+registers and copying them in each VBLANK interrupt.
+   
+## History of versions (dd/mm/yyyy):
 - v1.1 (07/02/2025) update to SDCC (4.1.12) Z80 calling conventions
 - v1.0 (07/07/2021) first version
 ============================================================================= */
@@ -31,7 +29,7 @@ History of versions: (dd/mm/yy)
 #include "../include/unWRLE2toVRAM.h"
 
 #include "../include/PSG_AY38910BF.h"
-#include "../include/PSG_AY38910BF_Xfunctions.h"
+#include "../include/PSG_AY38910BF_eXtended.h"
 
 #include "../include/Test_GFX.h"
 
