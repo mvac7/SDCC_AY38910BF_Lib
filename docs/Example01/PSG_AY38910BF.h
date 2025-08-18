@@ -2,7 +2,6 @@
 PSG_AY38910BF
 PSG AY-3-8910 Buffer MSX SDCC Library (fR3eL Project)
 ============================================================================= */
-
 #ifndef  __AY38910BF_H__
 #define  __AY38910BF_H__
 
@@ -53,7 +52,7 @@ PSG AY-3-8910 Buffer MSX SDCC Library (fR3eL Project)
 
 //AY port 
 #define AY_INTERNAL 0xA0	//Internal MSX PSG
-#define AY_EXTERNAL 0x10	//(MEGAFLASHROM SCC+, Flashjacks or others)
+#define AY_EXTERNAL 0x10	//(MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others)
 
 
 
@@ -67,10 +66,11 @@ extern char AYREGS[14];		// buffer of AY registers
 
 /* =============================================================================
 InitAY
-
-Function:	Initialize the library. Set default AY (internal) and clear buffer.
-Input   :	-
-Output  :	-
+Function:		InitAY()
+Description:	Initialize the library. 
+				Set default AY (internal) and clear buffer.
+Input:			-
+Output:			-
 ============================================================================= */
 void InitAY(void);
 
@@ -78,10 +78,10 @@ void InitAY(void);
 
 /* =============================================================================
 ClearDefAYbuffer
-
-Function:	Clear default AY buffer (AYREGS).
-Input   :	-
-Output  :	-
+Function:		ClearDefAYbuffer()
+Description:	Clear default AY buffer (AYREGS).
+Input:			-
+Output:			-
 ============================================================================= */
 extern void ClearDefAYbuffer(void);
 
@@ -89,10 +89,10 @@ extern void ClearDefAYbuffer(void);
 
 /* =============================================================================
 ClearAYbuffer
-
-Function:	Clear indicated AY buffer.
-Input   :	[unsigned int] buffer address of AY registers
-Output  :	-
+Function:		ClearAYbuffer(bufferADDR)
+Description:	Clear indicated AY buffer.
+Input:			[unsigned int] buffer address of AY registers
+Output:			-
 ============================================================================= */
 extern void ClearAYbuffer(unsigned int bufferADDR);
 
@@ -100,11 +100,11 @@ extern void ClearAYbuffer(unsigned int bufferADDR);
 
 /* =============================================================================
 SOUND
-
-Function:	Writes a value to the PSG register buffer
-Input   :	[char] register number (0 to 13)
-			[char] value
-Output  :	-
+Function:		SOUND(reg, value)
+Description:	Writes a value to the PSG register buffer
+Input:			[char] register number (0 to 13)
+				[char] value
+Output:			-
 ============================================================================= */
 void SOUND(char reg, char value);
 
@@ -112,10 +112,10 @@ void SOUND(char reg, char value);
 
 /* =============================================================================
 GetSound
-
-Function:	Read PSG register value (from buffer)
-Input   :	[char] register number (0 to 13)
-Output  :	[char] value 
+Function:		GetSound(reg)
+Description:	Read PSG register value (from buffer)
+Input:			[char] register number (0 to 13)
+Output:			[char] value 
 ============================================================================= */
 char GetSound(char reg);
 
@@ -123,10 +123,10 @@ char GetSound(char reg);
 
 /* =============================================================================
 SilenceAY
-
-Function:	Silences selected AY sound processor.
-Input   :	[char] AY index port
-Output  :	-
+Function:		SilenceAY()
+Description:	Silences selected AY sound processor.
+Input:			[char] AY index port
+Output:			-
 ============================================================================= */
 void SilenceAY(void);
 
@@ -134,25 +134,26 @@ void SilenceAY(void);
 
 /* =============================================================================
 SilenceAYbyPort
-
-Function:	Silences the indicated AY sound processor.
-			Set to zero the amplitude value by writing directly to the AY registers.
-			This is indicated for the case of playing sound dynamically between 
-			AYs (Internal/External), so that the last written values ​​do not sound 
-			infinitely.
-Input   :	[char] AY index port
-Output  :	-
+Function:		SilenceAYbyPort(port)
+Description:	Silences the indicated AY sound processor.
+				Set to zero the amplitude value by writing directly to the AY 
+				registers.
+				This is indicated for the case of playing sound dynamically 
+				between AYs (Internal/External), so that the last written 
+				values ​​do not sound infinitely.
+Input:			[char] AY index port
+Output:			-
 ============================================================================= */
-void SilenceAYbyPort(char AY_port);
+void SilenceAYbyPort(char port);
 
 
 
 /* =============================================================================
 PlayAY
-
-Function:	Copy buffer to selected AY (AY_IOport)
-Input   :	-
-Output  :	-
+Function:		PlayAY()
+Description:	Copy buffer to selected AY (AY_IOport)
+Input:			-
+Output:			-
 ============================================================================= */
 void PlayAY(void);
 
@@ -160,13 +161,13 @@ void PlayAY(void);
 
 /* =============================================================================
 Dump2AY
-
-Function:	Dump a buffer to the indicated AY
-Input   :	[char] AY index port
-			[unsigned int] buffer address of AY registers
-Output  :	-
+Function:		Dump2AY(port, bufferADDR)
+Description:	Dump a buffer to the indicated AY
+Input:			[char] AY index port
+				[unsigned int] buffer address of AY registers
+Output:			-
 ============================================================================= */
-void Dump2AY(char AY_port, unsigned int bufferADDR);
+void Dump2AY(char port, unsigned int bufferADDR);
 
 
 

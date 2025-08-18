@@ -18,71 +18,85 @@ PSG AY-3-8910 Buffer eXtended functions MSX SDCC Library (fR3eL Project)
 
 
 /* =============================================================================
-SetTonePeriod(channel, period) 
-
-Function:	Set Tone Period for any channel
-Input   :	[char] channel (0, 1 or 2)
-			[unsigned int] period (0 - 4095)
-Output  :	-
+SetTonePeriod
+Function:		SetTonePeriod(channel, period) 
+Description:	Set Tone Period for any channel
+Input:			[char] channel (0, 1 or 2)
+				[unsigned int] period (0 - 4095)
+Output:			-
 ============================================================================= */
 void SetTonePeriod(char channel, unsigned int period);
 
 
 
 /* =============================================================================
-SetNoisePeriod(period) 
-
-Function:	Set Noise Period
-Input   :	[char] period (0 - 31) 
-Output  :	- 
+SetNoisePeriod
+Function:		SetNoisePeriod(period) 
+Description:	Set Noise Period
+Input:			[char] period (0 - 31) 
+Output:			-
 ============================================================================= */
 void SetNoisePeriod(char period);
 
 
 
 /* =============================================================================
-SetEnvelopePeriod(period) 
-
-Function:	Set Envelope Period
-Input   :	[unsigned int] period (0 - 65535) 
-Output  :	- 
+SetEnvelopePeriod
+Function:		SetEnvelopePeriod(period) 
+Description:	Set Envelope Period
+Input:			[unsigned int] period (0 - 65535) 
+Output:			-
 ============================================================================= */
 void SetEnvelopePeriod(unsigned int period);
 
 
 
 /* =============================================================================
-SetVolume(channel, volume) 
-
-Function:	Set volume channel
-Input   :	[char] channel (0, 1 or 2)
-			[char] volume, 0 to 15 or 16 for activate envelope
-Output  :	-
+SetVolume
+Function:		SetVolume(channel, volume) 
+Description:	Set volume channel
+Input:			[char] channel (0, 1 or 2)
+				[char] volume, 0 to 15 or 16 for activate envelope
+Output:			-
 ============================================================================= */
 void SetVolume(char channel, char volume);
 
 
 
 /* =============================================================================
-SetChannel(channel, isTone, isNoise)
+EnableEnvelope
+Function:		EnableEnvelope(channel, isEnvelope) 
+Description:	Enables or disables sound envelope on a channel.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] Envelope state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void EnableEnvelope(char channel, switcher state);
 
-Function:	Mixer. Enable/disable Tone and Noise channels.
-Input   :	[char] channel (0, 1 or 2)
-			[switcher] tone state (ON=1;OFF=0)
-			[switcher] noise state (ON=1;OFF=0)
-Output  :	-
+
+
+/* =============================================================================
+SetChannel
+Function:		SetChannel(channel, isTone, isNoise)
+Description:	Mixer. 
+				Enables or disables Tone and Noise on channels.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] tone state (ON=enable;OFF=disable)
+				[switcher] noise state (ON=enable;OFF=disable)
+Output:			-
 ============================================================================= */
 void SetChannel(char channel, switcher isTone, switcher isNoise);
 
 
 
 /* =============================================================================
-SetEnvelope(shape) 
-
-Function:	Set envelope shape.
-			It will only affect channels that have the envelope active (see SetVolume)
-Input   :	[char] Envelope shape (0-15) (see envelope shapes definitions)
-Output  :	-
+SetEnvelope
+Function:		SetEnvelope(shape) 
+Description:	Set envelope shape.
+				It will affect all channels that have the sound envelope active.
+				Use SetVolume function to activate the sound envelope.
+Input:			[char] Envelope shape (0-15) (use envelope shapes definitions)
+Output:			-
 ============================================================================= */
 void SetEnvelope(char shape);
 

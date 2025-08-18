@@ -1,15 +1,15 @@
 @echo off
 REM MAKEFILE for 8/16K ROMs using SDCC compiler
 REM CFILENAME = Source name without extension
+SET CFILENAME=TestTextmodeLib
 REM ROMFILENAME = ROM file name without extension
+SET ROMFILENAME=TESTLIB
 REM ROMSIZE = 2000 for 8KBytes ROM or 4000 for 16KBytes ROM
-SET CFILENAME=Test0
-SET ROMFILENAME=TEST0
+SET ROMSIZE=2000
 SET CODELOC=0x4020
-SET ROMSIZE=4000
-SET CRT=libs\crt_MSX816kROM4000.rel
-SET LIB0=libs\PSG_AY38910BF.rel
-SET LIB1=libs\PSG_AY38910BF_eXtended.rel
+SET CRT=libs\crt0_MSX816kROM4000.rel
+SET LIB0=libs\textmode_MSXBIOS.rel
+SET LIB1=
 SET LIB2=
 SET LIB3=
 SET LIB4=
@@ -34,7 +34,7 @@ sdcc -v
 if not exist build\%CFILENAME%.ihx goto COMPILA
 del build\%CFILENAME%.ihx
 :COMPILA
-echo SDCC Compiling...
+echo Compiling...
 sdcc -mz80 -o build\ --code-loc %CODELOC% --data-loc 0xC000 --use-stdout --no-std-crt0 %CRT% %LIB0% %LIB1% %LIB2% %LIB3% %LIB4% %LIB5% %LIB6% %LIB7% %LIB8% %LIB9% %LIB10% %LIB11% %LIB12% src\%CFILENAME%.c
 if not exist build\%CFILENAME%.ihx goto SALIDA
 hex2bin -e bin -l %ROMSIZE% build\%CFILENAME%.ihx
