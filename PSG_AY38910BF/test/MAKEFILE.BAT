@@ -1,7 +1,7 @@
 @echo off
 REM MAKEFILE for 8/16K ROMs using SDCC compiler
 REM CFILENAME = Source name without extension
-SET CFILENAME=TestTextmodeLib
+SET CFILENAME=TestPSGAYBFLib
 REM ROMFILENAME = ROM file name without extension
 SET ROMFILENAME=TESTLIB
 REM ROMSIZE = 2000 for 8KBytes ROM or 4000 for 16KBytes ROM
@@ -9,7 +9,7 @@ SET ROMSIZE=2000
 SET CODELOC=0x4020
 SET CRT=libs\crt0_MSX816kROM4000.rel
 SET LIB0=libs\textmode_MSXBIOS.rel
-SET LIB1=
+SET LIB1=libs\PSG_AY38910BF.rel
 SET LIB2=
 SET LIB3=
 SET LIB4=

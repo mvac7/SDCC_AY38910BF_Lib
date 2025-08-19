@@ -76,17 +76,25 @@ Description:	Clear indicated AY buffer.
 Input:			[unsigned int] [HL] buffer address of AY registers
 ============================================================================= */
 _ClearAYbuffer::
-	ld   D,H
-	ld   E,L
-	inc  DE
-    LD   BC,#13
-    LD   (HL),#0
-    LDIR
+	xor  A
+	LD   B,#13
+AY_CLAYloop:
+	cp   #7					//reg 7 mixer
+	jr   Z,AY_setdef7
+	LD   (HL),#0
+AY_CLAnext:
+	inc  HL
+	inc  A
+    djnz AY_CLAYloop
 
 //disable envelope
-    LD   (HL),#0b10000000		//reg 13 disable envelpe shape
-    
+    LD   (HL),#0b10000000	//reg 13 disable envelpe shape (for library use only)
     ret
+	
+AY_setdef7:
+	LD   (HL),#0b00111000	//def mixer = 0x38 (in MSX system)
+	jr   AY_CLAnext
+	
 __endasm;
 }
 

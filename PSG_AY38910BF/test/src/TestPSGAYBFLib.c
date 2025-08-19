@@ -20,6 +20,7 @@
 #include "../include/msxBIOS.h"
 
 #include "../include/textmode_MSX.h"
+#include "../include/PSG_AY38910BF.h"
 
 
 
@@ -28,6 +29,19 @@
 
 #define T1_MAP	0x0000 // Name Table Text1
 #define G1_MAP	0x1800 // Name Table GRAPHIC1
+
+#ifndef  __BITVALUES__
+#define  __BITVALUES__
+#define Bit0 1
+#define Bit1 2
+#define Bit2 4
+#define Bit3 8
+#define Bit4 16
+#define Bit5 32
+#define Bit6 64
+#define Bit7 128
+#endif
+
 
 
 
@@ -40,19 +54,24 @@ char INKEY(void);
 
 void WAIT(unsigned int cicles);
 
-void test_SC0(void);
-void test_SC1(void);
+void test_AYLIB_page1(void);
+void test_AYLIB_page2(void);
+void test_AYLIB_page3(void);
+void test_AYLIB_page4(void);
 
-void testWIDTH(void);
-void testPRINT(void);
-void testPrintNumber(void);
-void testCLS(void);
+void SetFullSound(void);
+void TestGetSound(void);
+
+unsigned int GetPeriod(char fine, char coarse);
+
+void PrintHeader(void);
+
+void PrintBinary(char value);
+void PrintBit(char value);
 
 void PressAnyKey(void);
 
-void PrintExtendedGFXchar(char A);
 void PrintLine(char size);
-void DrawBox(char width, char height);
 
 void SetG1colors(char octet, char INKcolor,char BGcolor);
 
@@ -62,25 +81,16 @@ boolean isTxtMode(void);
 
 
 // ---------------------------------------------------------------------------- Constants
-const char text01[] = "Test textmode_MSXBIOS Lib";
-const char text10[] = ">Test CLS()";
+const char text01[] = "Test PSG_AY38910BF Lib    Page:";
 
-const char text_32col[] = "----5----1----1----2----2----3--         0    5    0    5    0  ";
-const char text_40col[] = "----5----1----1----2----2----3----3----4         0    5    0    5    0    5    0";
-
-const char text_LF[] = "\n"; // LF line Feed
-const char text_CR[] = "\r"; // CR Carriage Return
-
-const char testString[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-
-const char presskey[] = "Press any key to continue";
+const char msg_presskey[] = "Press any key to continue";
 
 const char CheckResult[2][8] = {"=ERROR!","=Ok    "};
 
 
 
 // ---------------------------------------------------------------------------- Global Variables
-
+char scr_page=0;
 
 
 
@@ -95,18 +105,13 @@ void main(void)
 	
 	SetG1colors(2,GRAY,DARK_BLUE);
 	SetG1colors(3,GRAY,DARK_BLUE);
-
-	LOCATE(2,10);
-	DrawBox(28, 3);
-	LOCATE(3,11);
-	PRINT(text01);
 	
-	//LOCATE(7,12);
-	//PRINT(text02);
-
-	PressAnyKey(); 
-	  
-	test_AYLIB();
+	scr_page=1;
+  
+	test_AYLIB_page1();
+	test_AYLIB_page2();
+	test_AYLIB_page3();
+	test_AYLIB_page4();
 
 	CLS();
 	PRINT("END");
@@ -179,35 +184,248 @@ void WAIT(unsigned int cicles)
 
 
 
-
-
-
-void test_AYLIB(void)
+void test_AYLIB_page1(void)
 {
+	PrintHeader();
 	
-	unsigned int time = 10*50;					//10 seconds in PAL
-	unsigned int tone = 1000;
-	unsigned int envPeriod = 700;
+	PrintLN(">InitAY()");
+	PrintLN(" Set default AY (internal)");
+	InitAY();    								//Init library. Set default AY (internal) 
 	
-	InitAY();    								/* Init library. Set default AY (internal) 
-												   and clear Buffer */
+	WAIT(100);
 	
-	SOUND(AY_ToneA_fine,tone&0xFF);				//Set channel A fine tune period (8b)
-	SOUND(AY_ToneA_coarse,tone>>8);				//Set channel A coarse tune period (4b)
-	SOUND(AY_Noise,20);							//Set noise period
-	SOUND(AY_AmpA,16);							//Enable envelope
-	SOUND(AY_Mixer,0B00110110);					//Enable Tone and Noise in channel A
-	SOUND(AY_EnvPeriod_fine,envPeriod&0xFF);	//Set fine tune envelope period (8b)
-	SOUND(AY_EnvPeriod_coarse,envPeriod>>8);	//Set coarse tune envelope period (8b)
-	SOUND(AY_EnvShape,AY_ENV_UpperTriangle);	//Set envelope shape
+	PrintLN(">Write buffer with SOUND()");
+	SetFullSound();
+	WAIT(100);
 	
-	PlayAY();									//Dump AY buffer to PSG (the sound is played)
+	PrintLN(">Test GetSound()");
+	WAIT(50);
+	TestGetSound();
 	
-	while(time-->0) HALT;						//wait 10secs.
+	WAIT(100);
 	
+	PrintLN(">PlayAY()");
+	PlayAY();
 	
+	PressAnyKey();
+}
+
+
+
+void test_AYLIB_page2(void)
+{
+	PrintHeader();
+	
+	PrintLN(">ClearDefAYbuffer()");
+	ClearDefAYbuffer();
+	PlayAY();
+	WAIT(50);
+	TestGetSound();
+
 
 	PressAnyKey();
+}
+
+
+
+void test_AYLIB_page3(void)
+{	
+	PrintHeader();
+	
+	PrintLN("The next part of the test\nrequires a second AY-3-8910 or\ncompatible."); 
+	PrintLN("You can find an external AY in\nthe cartridges:\nMEGAFLASHROM SCC+, Flashjacks,\nYamanooto and Carnivore2.");
+	
+	PrintLN("");
+	PRINT(msg_presskey);
+	INKEY();
+	
+	PrintLN("\n>Select external AY");
+	PrintLN(" AY_IOport=AY_EXTERNAL");
+	AY_IOport = AY_EXTERNAL;	
+	WAIT(100);
+	
+	PrintLN(">Write buffer with SOUND()");
+	SetFullSound();
+	WAIT(100);
+		
+	PrintLN(">PlayAY()");
+	PlayAY();
+	
+	PressAnyKey();
+	
+	ClearDefAYbuffer();
+	PlayAY();
+}
+
+
+
+void test_AYLIB_page4(void)
+{
+	PrintHeader();
+	
+	PrintLN("Test 2 AY at a time."); 
+	
+	PrintLN("\n>Select internal AY");
+	PrintLN(" AY_IOport=AY_INTERNAL");
+	AY_IOport = AY_INTERNAL;	
+	WAIT(100);
+	
+	PrintLN(">Write buffer with SOUND()");
+	SetFullSound();
+	WAIT(100);
+	
+	PrintLN(">Play external AY with Dump2AY");
+	WAIT(50);
+	Dump2AY(AY_EXTERNAL, (unsigned int) AYREGS);
+	WAIT(100);
+		
+	PrintLN(">Play internal with PlayAY()");
+	PlayAY();
+	
+	WAIT(200);
+	
+	PrintLN("");
+	PrintLine(32);
+	PrintLN(">Silence external AY");
+	WAIT(50);
+	PrintLN(" SilenceAYbyPort(AY_EXTERNAL)");
+	SilenceAYbyPort(AY_EXTERNAL);
+	WAIT(100);
+	PrintLN(">Silence Internal");
+	WAIT(50);
+	PrintLN(" SilenceAY()");
+	SilenceAY();
+	WAIT(100);
+	
+	PressAnyKey();
+}
+
+
+
+
+void SetFullSound(void)
+{
+	unsigned int time = 10*50;					//10 seconds in PAL
+	unsigned int toneC1 = 0x06AE;				//C note/octave 1
+	unsigned int toneD2 = 0x02FA;				//D note/octave 2
+	unsigned int envPeriod = 700;
+	
+//write to the buffer
+	SOUND(AY_ToneA_fine,toneC1&0xFF);			//Set channel A fine tune period (8b)
+	SOUND(AY_ToneA_coarse,toneC1>>8);			//Set channel A coarse tune period (4b)
+	SOUND(AY_ToneB_fine,toneD2&0xFF);			//Set channel B fine tune period (8b)
+	SOUND(AY_ToneB_coarse,toneD2>>8);			//Set channel B coarse tune period (4b)
+	SOUND(AY_ToneC_fine,toneD2&0xFF);			//Set channel C fine tune period (8b)
+	SOUND(AY_ToneC_coarse,toneD2>>8);			//Set channel C coarse tune period (4b)
+	SOUND(AY_Noise,20);							//Set noise period
+	SOUND(AY_AmpA,12);							//Set volume on channel A
+	SOUND(AY_AmpB,14);							//Set volume on channel B
+	SOUND(AY_AmpC,16);							//Enable envelope on channel C
+	SOUND(AY_Mixer,0B00110000);					//Enable Tone and Noise on channel A and Tone on channel B and C
+	SOUND(AY_EnvPeriod_fine,envPeriod&0xFF);	//Set fine tune envelope period (8b)
+	SOUND(AY_EnvPeriod_coarse,envPeriod>>8);	//Set coarse tune envelope period (8b)
+	SOUND(AY_EnvShape,AY_ENV_UpperTriangle);	//Set envelope shape	
+}
+
+
+
+void TestGetSound(void)
+{
+	char fine;
+	char coarse;
+	uint value16;
+	
+	fine=GetSound(AY_ToneA_fine);
+	coarse=GetSound(AY_ToneA_coarse);
+	value16=GetPeriod(fine,coarse);
+	PRINT(" Tone channel A:   ");
+	PrintNumber(value16);
+	
+	fine=GetSound(AY_ToneB_fine);
+	coarse=GetSound(AY_ToneB_coarse);
+	value16=GetPeriod(fine,coarse);
+	PRINT("\n Tone channel B:   ");
+	PrintNumber(value16);
+	
+	fine=GetSound(AY_ToneC_fine);
+	coarse=GetSound(AY_ToneC_coarse);
+	value16=GetPeriod(fine,coarse);
+	PRINT("\n Tone channel C:   ");
+	PrintNumber(value16);
+	
+	fine=GetSound(AY_Noise);
+	PRINT("\n Noise period:     ");
+	PrintNumber(fine);
+	
+	fine=GetSound(AY_AmpA);
+	PRINT("\n Channel A Volume: ");
+	PrintNumber(fine);
+	
+	fine=GetSound(AY_AmpB);
+	PRINT("\n Channel B Volume: ");
+	PrintNumber(fine);
+	
+	fine=GetSound(AY_AmpC);
+	PRINT("\n Channel C Volume: ");
+	PrintNumber(fine);
+	
+	//Mixer
+	fine=GetSound(AY_Mixer);
+	PRINT("\n Mixer:            ");
+	PrintBinary(fine);
+	
+	fine=GetSound(AY_EnvPeriod_fine);
+	coarse=GetSound(AY_EnvPeriod_coarse);
+	value16=GetPeriod(fine,coarse);
+	PRINT("\n Envelope period:  ");
+	PrintNumber(value16);
+	
+	fine=GetSound(AY_EnvShape);
+	PRINT("\n Envelope shape:   ");
+	PrintNumber(fine);
+	
+	PrintLN("");
+}
+
+
+
+unsigned int GetPeriod(char fine, char coarse)
+{
+	unsigned int result;
+	result = (coarse<<8) + fine;
+	return result;	
+}
+
+
+
+void PrintHeader(void)
+{
+	CLS();
+	PRINT(text01);
+	PrintFNumber(scr_page++,0,1);
+	PrintLine(32);
+}
+
+
+
+void PrintBinary(char value)
+{
+	PrintBit(value&Bit7);
+	PrintBit(value&Bit6);
+	PrintBit(value&Bit5);
+	PrintBit(value&Bit4);
+	PrintBit(value&Bit3);
+	PrintBit(value&Bit2);
+	PrintBit(value&Bit1);
+	PrintBit(value&Bit0);
+}
+
+
+
+void PrintBit(char value)
+{
+	if(value) PRINT("1");
+	else PRINT("0");
 }
 
 
@@ -220,20 +438,11 @@ void test_AYLIB(void)
 void PressAnyKey(void)
 {	
 	LOCATE(0,23);
-	PRINT(presskey);
+	PRINT(msg_presskey);
 	INKEY();	
 }
 
 
-
-/* =============================================================================
-   Print an Extended Graphic char
-============================================================================= */
-void PrintExtendedGFXchar(char A)
-{
-	bchput(1);
-	bchput(A);
-}
 
 
 
@@ -242,46 +451,8 @@ void PrintExtendedGFXchar(char A)
 ============================================================================= */
 void PrintLine(char size)
 {
-	char i;
-	
-	for(i=0;i<size;i++) PrintExtendedGFXchar(0x57);	
-}
-
-
-
-/* =============================================================================
-   Prints a box from the cursor position.
-============================================================================= */
-void DrawBox(char width, char height)
-{
-	char i;
-	char box_winside = width-2;
-	
-	char x = GetCursorColumn();
-	char y = GetCursorRow();
-	
-/*  PrintLN("\1\x58\1\x57\1\x57\1\x59");
-	PrintLN("\1\x56  \1\x56");
-	PrintLN("\1\x5A\1\x57\1\x57\1\x5B");*/
-	
-	PrintExtendedGFXchar(0x58);
-	PrintLine(box_winside);
-	PrintExtendedGFXchar(0x59);
-	
-	width--;
-	
-	for(i=y+1;i<y+(height-1);i++)
-	{
-		LOCATE(x,i);
-		PrintExtendedGFXchar(0x56);
-		LOCATE(x+width,i);
-		PrintExtendedGFXchar(0x56);
-	}
-	
-	LOCATE(x,y+height-1);
-	PrintExtendedGFXchar(0x5A);
-	PrintLine(box_winside);
-	PrintExtendedGFXchar(0x5B);	
+	char i;	
+	for(i=0;i<size;i++) bchput('-');	
 }
 
 
