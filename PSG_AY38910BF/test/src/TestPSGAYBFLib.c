@@ -1,7 +1,7 @@
 /*  =============================================================================
 # TestAY38910BF
 
-- Version: 0.9 (18/08/2025)
+- Version: 1.0 (18/08/2025)
 - Author: mvac7/303bcn
 - Architecture: MSX
 - Format: 8K ROM
@@ -12,7 +12,7 @@
 	Test fR3eL's PSG_AY38910BF library 
 
 ## History of versions: (dd/mm/yyyy)
-- v1.0 (???)
+- v1.0 (18/08/2025) first version
 ============================================================================= */
 #include "../include/newTypes.h"
 #include "../include/msxSystemVariables.h"
@@ -45,9 +45,9 @@
 
 
 // ---------------------------------------------------------------------------- Function Declaration
-char PEEK(uint address);
+char PEEK(unsigned int address);
 
-char VPEEK(uint address);
+char VPEEK(unsigned int vaddr);
 
 char INKEY(void);
 
@@ -121,12 +121,12 @@ void main(void)
 
 /* =============================================================================
 PEEK
-Description: 
-		Read a 8 bit value from the memory.
-Input:	[unsigned int] memory address
-Output:	[char] value
+Function:		PEEK(address)
+Description:	Read a 8 bit value from the memory.
+Input:			[unsigned int] memory address
+Output:			[char] value
 ============================================================================= */
-char PEEK(uint address) __naked
+char PEEK(unsigned int address) __naked
 {
 address;
 __asm
@@ -139,13 +139,14 @@ __endasm;
 
 /* =============================================================================
 VPEEK
+Function:		VPEEK(vaddr)
 Description:	Reads a value from video RAM. 
 Input:			[unsigned int] VRAM address
 Output:			[char] value
 ============================================================================= */ 
-char VPEEK(uint address) __naked
+char VPEEK(unsigned int vaddr) __naked
 {
-address;
+vaddr;	//HL
 __asm
 	jp BIOS_RDVRM
 __endasm;
@@ -155,10 +156,10 @@ __endasm;
 
 /* =============================================================================
 INKEY
-Description: 
-		Waits for a key press and returns its value
-Input:	-
-Output:	[char] key code
+Function:		INKEY()
+Description:	Waits for a key press and returns its value
+Input:			-
+Output:			[char] key code
 ============================================================================= */
 char INKEY(void) __naked
 {
@@ -171,6 +172,7 @@ __endasm;
 
 /* =============================================================================
 WAIT
+Function:		WAIT(cicles)
 Description:	Generates a pause in the execution of n interruptions.
 Input:			[unsigned int]  cicles number (VBLANKs)
 				(Note: PAL: 50=1second. ; NTSC: 60=1second.)

@@ -41,17 +41,6 @@ void SetNoisePeriod(char period);
 
 
 /* =============================================================================
-SetEnvelopePeriod
-Function:		SetEnvelopePeriod(period) 
-Description:	Set Envelope Period
-Input:			[unsigned int] period (0 - 65535) 
-Output:			-
-============================================================================= */
-void SetEnvelopePeriod(unsigned int period);
-
-
-
-/* =============================================================================
 SetVolume
 Function:		SetVolume(channel, volume) 
 Description:	Set volume channel
@@ -60,6 +49,20 @@ Input:			[char] channel (0, 1 or 2)
 Output:			-
 ============================================================================= */
 void SetVolume(char channel, char volume);
+
+
+
+/* =============================================================================
+SetChannel
+Function:		SetChannel(channel, isTone, isNoise)
+Description:	Mixer. 
+				Enables or disables Tone and Noise on channels.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] tone state (ON=enable;OFF=disable)
+				[switcher] noise state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void SetChannel(char channel, switcher isTone, switcher isNoise);
 
 
 
@@ -76,16 +79,13 @@ void EnableEnvelope(char channel, switcher state);
 
 
 /* =============================================================================
-SetChannel
-Function:		SetChannel(channel, isTone, isNoise)
-Description:	Mixer. 
-				Enables or disables Tone and Noise on channels.
-Input:			[char] channel (0, 1 or 2)
-				[switcher] tone state (ON=enable;OFF=disable)
-				[switcher] noise state (ON=enable;OFF=disable)
+SetEnvelopePeriod
+Function:		SetEnvelopePeriod(period) 
+Description:	Set Envelope Period
+Input:			[unsigned int] period (0 - 65535) 
 Output:			-
 ============================================================================= */
-void SetChannel(char channel, switcher isTone, switcher isNoise);
+void SetEnvelopePeriod(unsigned int period);
 
 
 

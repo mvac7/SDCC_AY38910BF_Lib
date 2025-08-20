@@ -1,18 +1,19 @@
 /* =============================================================================
-# Test AY38910BF MSX Library (fR3eL Project)
+# Test PSG_AY38910BF and PSG_AY38910BF_eXtended MSX Library (fR3eL Project)
 
-Version: 1.1 (07/02/2025)
-Author: mvac7/303bcn
-Architecture: MSX
-Format: MSX 16K ROM
-Programming language: C and Z80 assembler
-Compiler: SDCC 4.4 or newer
+- Version: 1.2 (20/08/2025)
+- Author: mvac7/303bcn
+- Architecture: MSX
+- Format: 16K ROM (BIOS+ROM+RAM+RAM)
+- Programming language: C and Z80 assembler
+- Compiler: SDCC 4.4
 
 ## Description:
 This library is based on writing in a buffer the values of the AY 
 registers and copying them in each VBLANK interrupt.
    
 ## History of versions (dd/mm/yyyy):
+- v1.2 (20/08/2025) Added PSG_AY38910BF_eXtended functions 
 - v1.1 (07/02/2025) update to SDCC (4.1.12) Z80 calling conventions
 - v1.0 (07/07/2021) first version
 ============================================================================= */
@@ -33,11 +34,13 @@ registers and copying them in each VBLANK interrupt.
 
 #include "../include/Test_GFX.h"
 
+
+// ---------------------------------------------------------------------------- Labels
 #define PAUSE_TIME 30
 
 
 
-// Function Declarations -------------------------------------------------------
+// ---------------------------------------------------------------------------- Declaration of functions
 void my_TIMI(void);
 
 void test1(void); // test SOUND
@@ -49,9 +52,7 @@ void test6(void); // test PlayEnvelope and SetChannel
 
 void test_Noise(void);
 
-void PLAY_EnvShape(char envType);
-
-void WAIT(uint cicles);
+void WAIT(unsigned int cicles);
 
 void LOCATE(char x, char y) ;
 
@@ -67,9 +68,9 @@ void PrintSwitcher(char col, char lin, boolean state);
 
 
 
-// constants  ------------------------------------------------------------------
-const char text01[] = "Test AY38910BF Library";
-const char text02[] = "v1.1 (7 February 2025)";
+// ---------------------------------------------------------------------------- Constants
+const char text01[] = "Test PSG_AY38910BF and ";
+const char text02[] = "     PSG_AY38910BF_eXtended";
 
 const char text03[] = "                             ";
 
@@ -78,11 +79,11 @@ const char EnvelopeIndex[16]={0,0,0,0,1,1,1,1,2,0,3,4,5,6,7,1};
 
 
 
-// global variable definition --------------------------------------------------
+// ---------------------------------------------------------------------------- Global Variables
 
 
 
-// Functions -------------------------------------------------------------------
+// ---------------------------------------------------------------------------- Definition of functions
 
 //
 void main(void)
@@ -161,25 +162,27 @@ void my_TIMI(void)
 
 
 /* =============================================================================
- Generates a pause in the execution of n interruptions.
- PAL: 50=1second. ; NTSC: 60=1second.
-============================================================================= */ 
-void WAIT(uint cicles)
+WAIT
+Function:		WAIT(cicles)
+Description:	Generates a pause in the execution of n interruptions.
+Input:			[unsigned int]  cicles number (VBLANKs)
+				(Note: PAL: 50=1second. ; NTSC: 60=1second.)
+============================================================================= */
+void WAIT(unsigned int cicles)
 {
-	uint i;
+	unsigned int i;
 	for(i=0;i<cicles;i++) HALT;
-	return;
 }
 
 
 
 /* =============================================================================
 LOCATE
-
-Function:	Moves the cursor to the specified location.
-Input:		[char] Position X of the cursor. (0 to 31 or 79)
-			[char] Position Y of the cursor. (0 to 23)         
-Output:   -
+Function:		LOCATE(x, y)
+Description:	Moves the cursor to the specified location.
+Input:			[char] Position X of the cursor. (0 to 31 or 79)
+				[char] Position Y of the cursor. (0 to 23)         
+Output:   		-
 ============================================================================= */
 void LOCATE(char x, char y) __naked
 {
@@ -201,61 +204,59 @@ __endasm;
 
 
 /* =============================================================================
-   VPrintNumberO
-   Prints a number at the specified position on the screen.
-   
-   Apply an offset to the tile number to be able to use a font hosted in 
-   another area of the tileset.
-   
-   Inputs:
-     [unsigned int] VRAM address in Pattern Name Table.
-     [unsigned int] number
-     [char] length
+VPrintNumberO
+Function:		VPrintNumberO(vaddr, value, length, offset)
+Description:	Prints a number at the specified position on the screen.
+
+				Apply an offset to the tile number to be able to use a font  
+				hosted in another area of the tileset.
+
+Inputs:			[unsigned int] VRAM address in Pattern Name Table.
+				[unsigned int] number
+				[char] length
 ============================================================================= */
 void VPrintNumberO(unsigned int vaddr, unsigned int value, char length, signed char offset)
 {
-  char pos=0; //5-length;
-  //char text[]="     ";
+	char pos=0; //5-length;
+	//char text[]="     ";
 
-  num2Dec16(value, 0x2000+length); 
-  
-  while (length-->0){ VPOKE(vaddr++,VPRINT_ntext[pos++]+offset);}
-  
+	num2Dec16(value, 0x2000+length); 
+
+	while (length-->0){ VPOKE(vaddr++,VPRINT_ntext[pos++]+offset);}
 }
 
 
 
 // test SOUND
 void test1(void)
-{  
- 
-  VLOCATE(1,21);
-  VPRINT(">Test SOUND function");  
-  VLOCATE(1,22);
-  VPRINT(" Press a key to stop sound");
+{
+	VLOCATE(1,21);
+	VPRINT(">Test SOUND function");  
+	VLOCATE(1,22);
+	VPRINT(" Press a key to stop sound");
 
-  Set_tone(AY_Channel_A,1000);
-  Set_tone(AY_Channel_B,0);
-  Set_tone(AY_Channel_C,0);
-   
-  Set_noise(20);
+	Set_tone(AY_Channel_A,1000);
+	Set_tone(AY_Channel_B,0);
+	Set_tone(AY_Channel_C,0);
 
-  Set_Amp(AY_Channel_A,16); //channel A envelope on
-  Set_Amp(AY_Channel_B,0);
-  Set_Amp(AY_Channel_C,0);
-  
-  Set_mixer(0B00110110);
- 
-  Set_EnvPeriod(1000);
-  
-  Set_EnvShape(14);
-  
-  LOCATE(27,22);
-  INKEY();
-  
-  Set_Amp(AY_Channel_A,0); //silence channel A  
-  
-  WAIT(PAUSE_TIME);
+	Set_noise(20);
+
+	Set_Amp(AY_Channel_A,16); //channel A envelope on
+	Set_Amp(AY_Channel_B,0);
+	Set_Amp(AY_Channel_C,0);
+
+	Set_mixer(0B00110110);
+
+	Set_EnvPeriod(1000);
+
+	Set_EnvShape(14);
+
+	LOCATE(27,22);
+	INKEY();
+
+	Set_Amp(AY_Channel_A,0); //silence channel A  
+
+	WAIT(PAUSE_TIME);
 }
 
 
@@ -329,30 +330,30 @@ void test2(void)
 // Test SetNoisePeriod
 void test3(void)
 {
-  char noise=0;  
-   
-  VLOCATE(1,21);
-  VPRINT(">Test SetNoisePeriod function ");
-  VLOCATE(1,22);
-  VPRINT(text03);
-  
-  Set_mixer(0B00110111); //Mixer
-  Set_Amp(AY_Channel_A,15);
-  test_Noise();
-  
-  Set_mixer(0B00100111); //Mixer
-  Set_Amp(AY_Channel_B,15);
-  test_Noise();
-  
-  Set_mixer(0B00000111); //Mixer
-  Set_Amp(AY_Channel_C,15);
-  test_Noise();
-  
-  WAIT(PAUSE_TIME);
-  
-  Set_Amp(AY_Channel_A,0);
-  Set_Amp(AY_Channel_B,0);
-  Set_Amp(AY_Channel_C,0);
+	char noise=0;  
+
+	VLOCATE(1,21);
+	VPRINT(">Test SetNoisePeriod function ");
+	VLOCATE(1,22);
+	VPRINT(text03);
+
+	Set_mixer(0B00110111); //Mixer
+	Set_Amp(AY_Channel_A,15);
+	test_Noise();
+
+	Set_mixer(0B00100111); //Mixer
+	Set_Amp(AY_Channel_B,15);
+	test_Noise();
+
+	Set_mixer(0B00000111); //Mixer
+	Set_Amp(AY_Channel_C,15);
+	test_Noise();
+
+	WAIT(PAUSE_TIME);
+
+	Set_Amp(AY_Channel_A,0);
+	Set_Amp(AY_Channel_B,0);
+	Set_Amp(AY_Channel_C,0);
 }
 
 
@@ -491,7 +492,7 @@ void test6(void)
 	//while(!isEnd)
 	for(i=0;i<16;i++)
 	{
-		PLAY_EnvShape(i);    
+		Set_EnvShape(i);    
 		WAIT(100);
 	}
 
@@ -502,81 +503,85 @@ void test6(void)
 
 
 
-void PLAY_EnvShape(char shape)
+/*void PLAY_EnvShape(char shape)
 {
-  char index;
-  
-  //shape = EnvelopeValue[index];
-  index = EnvelopeIndex[shape]; 
-  
-  SetEnvelope(shape);
-  
-  VPrintNumberO(0x1A30,shape,2,+144); //16,17  
-  CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3);  // 19,17
-  
-}
+	char index;
+
+	//shape = EnvelopeValue[index];
+	index = EnvelopeIndex[shape]; 
+
+	SetEnvelope(shape);
+
+	VPrintNumberO(0x1A30,shape,2,+144); //16,17  
+	CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3);  // 19,17
+}*/
 
 
 
 void Set_tone(char channel, uint period)
 {
-  uint vaddr=BASE5 + 6+(channel*10) + (7*32); //calculates the position of the numeric field
-  if (channel==2) vaddr++;  // correct the position of the third column
-  
-  VPrintNumberO(vaddr,period,4,144);  //6+(channel*10),10
-  
-  channel=channel*2;
-  SOUND(channel++,period & 0xFF);
-  SOUND(channel,(period & 0xFF00)/0xFF);
+	uint vaddr=BASE5 + 6+(channel*10) + (7*32); //calculates the position of the numeric field
+	if (channel==2) vaddr++;  // correct the position of the third column
+
+	VPrintNumberO(vaddr,period,4,144);  //6+(channel*10),10
+
+	SetTonePeriod(channel,period);
+/*	channel=channel*2;
+	SOUND(channel++,period & 0xFF);
+	SOUND(channel,(period & 0xFF00)/0xFF);*/
 }
 
 
 
 void Set_Amp(char channel, char value)
 {
-  boolean envState;
-  uint vaddr=BASE5 + 5+(channel*10) + (9*32); //calculates the position of the numeric field
-  
-  SOUND(8+channel,value);
-  
-  VPrintNumberO(vaddr,value,2,144); //5+(channel*10),12
-  
-  if (value&Bit4) envState=true;
-  else envState=false;
-  
-  //PRINTON(0x1927+(channel*10),envState); //Envelope     (value&Bit4)>>4
-  PrintSwitcher(7+(channel*10),9,envState);
+	boolean envState;
+	uint vaddr=BASE5 + 5+(channel*10) + (9*32); //calculates the position of the numeric field
 
+	SetVolume(channel,value);
+	//SOUND(8+channel,value);
+
+	VPrintNumberO(vaddr,value,2,144); //5+(channel*10),12
+
+	if (value&Bit4) envState=true;
+	else envState=false;
+
+	//PRINTON(0x1927+(channel*10),envState); //Envelope     (value&Bit4)>>4
+	PrintSwitcher(7+(channel*10),9,envState);
 }
 
 
 
 void Set_noise(char period)
 {
-    VPrintNumberO(0x19CF,period,2,144); //15,14
-    SOUND(AY_Noise,period);
+    SetNoisePeriod(period);
+    //SOUND(AY_Noise,period);
+	
+	VPrintNumberO(0x19CF,period,2,144); //15,14
 }
 
 
 
 void Set_EnvPeriod(uint period)
 {
-  SOUND(11,period & 0xFF);
-  SOUND(12,(period & 0xFF00)/0xFF);
-  
-  VPrintNumberO(0x1A10,period,5,144); //16,16
+	SetEnvelopePeriod(period);	
+	//SOUND(11,period & 0xFF);
+	//SOUND(12,(period & 0xFF00)/0xFF);
+
+	VPrintNumberO(0x1A10,period,5,144); //16,16
 }
 
 
 
 void Set_EnvShape(char shape)
 {
-  char index = EnvelopeIndex[shape];
-    
-  SOUND(AY_EnvShape,shape); //envelope wave type
-  
-  VPrintNumberO(0x1A30,shape,2,+144); //16,17
-  CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3); //19,17
+	char index = EnvelopeIndex[shape];
+
+	SetEnvelope(shape);			//envelope shape type
+	//SOUND(AY_EnvShape,shape); 
+
+	VPrintNumberO(0x1A30,shape,2,+144); //16,17
+	CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3); //19,17
 }
 
 
