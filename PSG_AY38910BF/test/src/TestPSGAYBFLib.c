@@ -11,7 +11,6 @@
 ## Description:
 	Test fR3eL's PSG_AY38910BF library 
 
-
 ## History of versions: (dd/mm/yyyy)
 - v1.0 (???)
 ============================================================================= */
@@ -32,7 +31,7 @@
 
 #ifndef  __BITVALUES__
 #define  __BITVALUES__
-#define Bit0 1
+#define Bit0 0b00000001
 #define Bit1 2
 #define Bit2 4
 #define Bit3 8
@@ -115,7 +114,7 @@ void main(void)
 
 	CLS();
 	PRINT("END");
-	PressAnyKey();  
+	WAIT(200);
 }
 
 
@@ -232,14 +231,17 @@ void test_AYLIB_page3(void)
 {	
 	PrintHeader();
 	
-	PrintLN("The next part of the test\nrequires a second AY-3-8910 or\ncompatible."); 
-	PrintLN("You can find an external AY in\nthe cartridges:\nMEGAFLASHROM SCC+, Flashjacks,\nYamanooto and Carnivore2.");
+	PrintLN("Test on an external AY.\n");
+	PrintLN("The next part of the test\nrequires a second AY-3-8910 or\ncompatible.\n"); 
+	PrintLN("You can find an external AY in\nthe cartridges:\nMEGAFLASHROM SCC+, Flashjacks,\nYamanooto and Carnivore2.\n");
 	
-	PrintLN("");
 	PRINT(msg_presskey);
 	INKEY();
 	
-	PrintLN("\n>Select external AY");
+	PRINT("\r");
+	PrintLine(32);
+	
+	PrintLN(">Select external AY");
 	PrintLN(" AY_IOport=AY_EXTERNAL");
 	AY_IOport = AY_EXTERNAL;	
 	WAIT(100);
@@ -274,12 +276,12 @@ void test_AYLIB_page4(void)
 	SetFullSound();
 	WAIT(100);
 	
-	PrintLN(">Play external AY with Dump2AY");
+	PRINT(">Play external AY with Dump2AY()");
 	WAIT(50);
 	Dump2AY(AY_EXTERNAL, (unsigned int) AYREGS);
 	WAIT(100);
 		
-	PrintLN(">Play internal with PlayAY()");
+	PrintLN(">Play internal AY with PlayAY()");
 	PlayAY();
 	
 	WAIT(200);
