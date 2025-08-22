@@ -15,7 +15,7 @@
 
 ## Description
 
-C function library with functions to be able to play sounds and/or music with the PSG AY-3-8910.
+C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
 
 This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
@@ -23,8 +23,8 @@ This project consists of two libraries that complement each other:
 
 It does not use the BIOS so it can be used to program for ROMs, MSX BASIC or MSX-DOS environments.
 
-It incorporates the SOUND function with the same behavior as the command included in MSX BASIC, 
-as well as specific functions to modify the different sound parameters of the AY. 
+PSG_AY38910BF includes the SOUND function with the same behavior as the command included in MSX BASIC, 
+while PSG_AY38910BF_eXtended contains specific functions to modify the different sound parameters of the AY.
 
 Security control of the I/O port enable bits in the Mixer register.
 On some MSX computers that incorporate an AY-3-8910, they may be damaged if incorrect activation values ​​are written.
@@ -32,13 +32,10 @@ This library reads the port trigger values ​​and persists them, every time t
 
 You can access the documentation here with [`How to use the library`](docs/HOWTO.md).
 
-In the source code [`examples/`](examples/), you can find applications for testing and learning purposes.
-
-![TEST AY Lib](https://raw.githubusercontent.com/mvac7/SDCC_AY38910BF_Lib/master/examples/test01_ROM/GFX/TESTAYBF_screenshot.png) 
-
 These libraries are part of the [MSX fR3eL Project](https://github.com/mvac7/SDCC_MSX_fR3eL).
 
-Use them for developing MSX applications using Small Device C Compiler [`SDCC`](http://sdcc.sourceforge.net/).
+You can use this library to develop applications for ROM, MSXBASIC or MSX-DOS environments, 
+using the Small Device C Compiler [(SDCC)](http://sdcc.sourceforge.net/) cross compiler.
 
 This project is open source under the [MIT license](LICENSE).<br/>
 You can add part or all of this code in your application development or include it in other libraries/engines.
@@ -94,12 +91,14 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 | Name | Declaration | Description |
 | ---  | ---         | ---         |
 | InitAY    | `InitAY()` | Initialize the library. Set default AY (internal) and clear buffer. |
-| SilenceAY | `SilenceAY()` | Silences the indicated AY sound processor. |
-| SilenceAYbyPort | `SilenceAYbyPort(char AY_port)` | Silences the indicated AY sound processor. |
-| PlayAY    | `PlayAY()` | Copy buffer to selected AY (AY_IOport) |
-| Dump2AY   | `Dump2AY(char AY_port, unsigned int bufferADDR)` | Dump a buffer to the indicated AY |
+| ClearDefAYbuffer | `ClearDefAYbuffer()` | Clear default AY buffer (AYREGS) |
+| ClearAYbuffer    | `ClearAYbuffer(bufferADDR)` | Clear indicated AY buffer |
 | SOUND     | `SOUND(char reg, char value)` | Writes a value to the PSG register buffer |
 | GetSound  | `char GetSound(char reg)` | Read PSG register value (from buffer) |
+| PlayAY    | `PlayAY()` | Copy buffer to selected AY (AY_IOport) |
+| Dump2AY   | `Dump2AY(char AY_port, unsigned int bufferADDR)` | Dump a buffer to the indicated AY |
+| SilenceAY | `SilenceAY()` | Silences the indicated AY sound processor. |
+| SilenceAYbyPort | `SilenceAYbyPort(char AY_port)` | Silences the indicated AY sound processor. |
 
 <br/>
 
@@ -107,9 +106,47 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 
 | Name | Declaration | Description |
 | ---  | ---         | ---         |
-| SetTonePeriod     | `SetTonePeriod(char channel, unsigned int period)` | Set Tone Period for any channel |
-| SetNoisePeriod    | `SetNoisePeriod(char period)` | Set Noise Period |
-| SetEnvelopePeriod | `SetEnvelopePeriod(unsigned int period)` | Set Envelope Period |
-| SetVolume         | `SetVolume(char channel, char volume)` | Set volume channel |
-| SetChannel        | `SetChannel(char channel, switcher isTone, switcher isNoise)` | Mixer. Enable/disable Tone and Noise channels |
-| SetEnvelope       | `SetEnvelope(char shape)` | Set envelope shape |
+| SetTonePeriod     | `SetTonePeriod(channel, period)` | Set Tone Period for any channel |
+| SetNoisePeriod    | `SetNoisePeriod(period)` | Set Noise Period |
+| SetVolume         | `SetVolume(channel, volume)` | Set volume channel |
+| SetChannel        | `SetChannel(channel, isTone, isNoise)` | Mixer. Enable/disable Tone and Noise channels   |
+| EnableEnvelope    | `EnableEnvelope(channel, isEnvelope)`  | Enables or disables sound envelope on a channel |
+| SetEnvelopePeriod | `SetEnvelopePeriod(period)` | Set Envelope Period |
+| SetEnvelope       | `SetEnvelope(shape)` | Set envelope shape |
+
+<br/>
+
+---
+
+## Code Examples
+
+The project includes several examples that I have used to test the library and that can help you learn how to use this library.
+
+<br/>
+
+### TestPSGAYBFLib
+
+Performs a test of the functions of the PSG_AY38910BF library.
+
+MSX 8K ROM
+
+[`Sourcecode`](PSG_AY38910BF/test)
+
+![Test screenshot 1](docs/pics/TESTAYBF.1.png) 
+![Test screenshot 2](docs/pics/TESTAYBF.2.png) 
+![Test screenshot 3](docs/pics/TESTAYBF.3.png) 
+![Test screenshot 4](docs/pics/TESTAYBF.4.png) 
+![Test OpenMSX screenshot 5](docs/pics/openMSX_MFRPSG.png) 
+
+<br/>
+
+### TestAY
+
+Performs a test of the functions of the PSG_AY38910BF and PSG_AY38910BF_eXtended libraries.
+
+MSX 16K ROM
+
+[`Sourcecode`](PSG_AY38910BF_eXtended/test)
+
+![TestAY screenshot 1](docs/pics/TESTAY.1.png) 
+![TestAY screenshot 2](docs/pics/TESTAY.2.png) 

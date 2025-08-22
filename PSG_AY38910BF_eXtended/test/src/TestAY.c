@@ -1,5 +1,5 @@
 /* =============================================================================
-# Test PSG_AY38910BF and PSG_AY38910BF_eXtended MSX Library (fR3eL Project)
+# TestAY
 
 - Version: 1.2 (20/08/2025)
 - Author: mvac7/303bcn
@@ -9,6 +9,8 @@
 - Compiler: SDCC 4.4
 
 ## Description:
+Test PSG_AY38910BF and PSG_AY38910BF_eXtended MSX Library (fR3eL Project)
+
 This library is based on writing in a buffer the values of the AY 
 registers and copying them in each VBLANK interrupt.
    
@@ -39,18 +41,11 @@ registers and copying them in each VBLANK interrupt.
 #define PAUSE_TIME 30
 
 
+#define C_Octave1 0x06AE
+
 
 // ---------------------------------------------------------------------------- Declaration of functions
 void my_TIMI(void);
-
-void test1(void); // test SOUND
-void test2(void); // test SetTonePeriod
-void test3(void); // test SetNoisePeriod
-void test4(void); // test SetVolume
-void test5(void); // test SetEnvelopePeriod
-void test6(void); // test PlayEnvelope and SetChannel
-
-void test_Noise(void);
 
 void WAIT(unsigned int cicles);
 
@@ -64,7 +59,24 @@ void Set_noise(char period);
 void Set_mixer(char value);
 void Set_EnvPeriod(uint period);
 void Set_EnvShape(char shape);
+
+void ShowMixer(void);
 void PrintSwitcher(char col, char lin, boolean state);
+void ShowAYregs(void);
+void ShowTone(char channel);
+void ShowAmp(char channel, char value);
+void ShowEnvelopeShape(char shape);
+
+void test1(void); // test SOUND
+void test2(void); // test SetTonePeriod
+void test3(void); // test SetNoisePeriod
+void test4(void); // test SetVolume
+void test5(void); // test SetEnvelopePeriod
+void test6(void); // test PlayEnvelope and SetChannel
+
+void test_Tone(char channel, uint vaddr);
+void test_Noise(void);
+void test_Volume(char channel, uint vaddr);
 
 
 
@@ -230,31 +242,64 @@ void VPrintNumberO(unsigned int vaddr, unsigned int value, char length, signed c
 // test SOUND
 void test1(void)
 {
+	char value;
+	uint period;
+	
 	VLOCATE(1,21);
 	VPRINT(">Test SOUND function");  
 	VLOCATE(1,22);
 	VPRINT(" Press a key to stop sound");
 
-	Set_tone(AY_Channel_A,1000);
-	Set_tone(AY_Channel_B,0);
-	Set_tone(AY_Channel_C,0);
+	period=0x0D5D;
+	SOUND(AY_ToneA_fine,period&0xFF);
+	SOUND(AY_ToneA_coarse,(period&0xFF00)>>8);
+	
+	period=C_Octave1;
+	SOUND(AY_ToneB_fine,period&0xFF);
+	SOUND(AY_ToneB_coarse,(period&0xFF00)>>8);
+	
+	period=0x0357;
+	SOUND(AY_ToneC_fine,period&0xFF);
+	SOUND(AY_ToneC_coarse,(period&0xFF00)>>8);
+	
+/*	Set_tone(AY_Channel_A,0x0D5D);
+	Set_tone(AY_Channel_B,C_Octave1);
+	Set_tone(AY_Channel_C,0x0357);*/
 
-	Set_noise(20);
+	//Set_noise(20);
+	SOUND(AY_Noise,20);
 
-	Set_Amp(AY_Channel_A,16); //channel A envelope on
-	Set_Amp(AY_Channel_B,0);
-	Set_Amp(AY_Channel_C,0);
+/*	Set_Amp(AY_Channel_A,16);
+	Set_Amp(AY_Channel_B,16);
+	Set_Amp(AY_Channel_C,16);*/
+	
+	SOUND(AY_AmpA,16);	//enable envelope in A channel
+	SOUND(AY_AmpB,16);
+	SOUND(AY_AmpC,16);
 
-	Set_mixer(0B00110110);
+/*	SetChannel(AY_Channel_A,ON,ON);
+	SetChannel(AY_Channel_B,ON,OFF);
+	SetChannel(AY_Channel_C,ON,OFF);*/
+	SOUND(AY_Mixer,0b00110000); //Mixer
 
-	Set_EnvPeriod(1000);
+//	Set_EnvPeriod(1000);
+	period=1000;
+	SOUND(AY_EnvPeriod_fine,period&0xFF);
+	SOUND(AY_EnvPeriod_coarse,(period&0xFF00)>>8);
 
-	Set_EnvShape(14);
+//	Set_EnvShape(14);
+	ShowEnvelopeShape(14);
+	SOUND(AY_EnvShape,14);
+	
+	ShowAYregs();
 
 	LOCATE(27,22);
 	INKEY();
 
-	Set_Amp(AY_Channel_A,0); //silence channel A  
+	ClearDefAYbuffer();
+	ShowAYregs();
+	value=GetSound(AY_EnvShape);
+	ShowEnvelopeShape(value);
 
 	WAIT(PAUSE_TIME);
 }
@@ -264,65 +309,53 @@ void test1(void)
 // test SetTonePeriod
 void test2(void)
 {
-	uint period=0;
+	SOUND(AY_Mixer,0b00111111); //Mixer · All channels OFF
 
 	VLOCATE(1,21);  
 	VPRINT(">Test SetTonePeriod function  ");  
 	VLOCATE(1,22);
 	VPRINT(" Press [SPACE] to next        ");
 
-	Set_mixer(0B00111110);
-	Set_Amp(AY_Channel_A,15);
-	while(1)
-	{
-		HALT;
-
-		if (GetKeyMatrix(8)!=255) break;
-
-		VPrintNumberO(0x18E6,period,4,+144); //6,7
-
-		SetTonePeriod(AY_Channel_A, period++);
-		if (period>4094) period=0;
-	}  
-	Set_Amp(AY_Channel_A,0);
+	SetChannel(AY_Channel_A,ON,OFF);
+	ShowMixer();
+	test_Tone(AY_Channel_A,0x18E6);
 
 	WAIT(PAUSE_TIME);
 
-	period = 0;
-	Set_mixer(0B00111101);
-	Set_Amp(AY_Channel_B,15);
-	while(1)
-	{
-		HALT;
-
-		if (GetKeyMatrix(8)!=255) break;
-
-		VPrintNumberO(0x18F0,period,4,+144); //16,7
-
-		SetTonePeriod(AY_Channel_B, period++);
-		if (period>4094) period=0;
-	}  
-	Set_Amp(AY_Channel_B,0);
-
+	SetChannel(AY_Channel_A,OFF,OFF);
+	SetChannel(AY_Channel_B,ON ,OFF);
+	ShowMixer();
+	test_Tone(AY_Channel_B,0x18F0);
+	
 	WAIT(PAUSE_TIME);
 
-	period = 0;
-	Set_mixer(0B00111011);
-	Set_Amp(AY_Channel_C,15);
-	while(1)
-	{
-		HALT;
-
-		if (GetKeyMatrix(8)!=255) break;
-
-		VPrintNumberO(0x18FB,period,4,144); //27,7
-
-		SetTonePeriod(AY_Channel_C, period++);
-		if (period>4094) period=0;
-	}
-	Set_Amp(AY_Channel_C,0);
+	SetChannel(AY_Channel_B,OFF,OFF);
+	SetChannel(AY_Channel_C,ON ,OFF);
+	ShowMixer();
+	test_Tone(AY_Channel_C,0x18FB);
 
 	WAIT(PAUSE_TIME);  
+}
+
+
+
+void test_Tone(char channel, uint vaddr)
+{
+	uint period=0;
+	
+	Set_Amp(channel,15);
+	while(period<4096)
+	{
+		HALT;
+
+		if (GetKeyMatrix(8)!=255) break;
+
+		VPrintNumberO(vaddr,period,4,144); //27,7
+
+		SetTonePeriod(channel, period++);
+		//if (period>4094) period=0;
+	}
+	Set_Amp(channel,0);	
 }
 
 
@@ -330,22 +363,30 @@ void test2(void)
 // Test SetNoisePeriod
 void test3(void)
 {
-	char noise=0;  
+	char noise=0;
+	
+	SOUND(AY_Mixer,0b00111111); //Mixer channels OFF
 
 	VLOCATE(1,21);
 	VPRINT(">Test SetNoisePeriod function ");
 	VLOCATE(1,22);
 	VPRINT(text03);
 
-	Set_mixer(0B00110111); //Mixer
+	//Set_mixerSet_mixer(0B00110111); //Mixer
+	SetChannel(AY_Channel_A,OFF,ON);
+	ShowMixer();
 	Set_Amp(AY_Channel_A,15);
 	test_Noise();
 
-	Set_mixer(0B00100111); //Mixer
+	//Set_mixer(0B00100111); //Mixer
+	SetChannel(AY_Channel_B,OFF,ON);
+	ShowMixer();
 	Set_Amp(AY_Channel_B,15);
 	test_Noise();
 
-	Set_mixer(0B00000111); //Mixer
+	//Set_mixer(0B00000111); //Mixer
+	SetChannel(AY_Channel_C,OFF,ON);
+	ShowMixer();
 	Set_Amp(AY_Channel_C,15);
 	test_Noise();
 
@@ -379,7 +420,7 @@ void test_Noise(void)
 // Test SetVolume
 void test4(void)
 {
-	char i;
+	SOUND(AY_Mixer,0b00111111); //Mixer channels OFF
 
 	VLOCATE(1,21);
 	VPRINT(">Test SetVolume function     ");
@@ -388,42 +429,38 @@ void test4(void)
 
 	Set_noise(10);
 
-	Set_tone(AY_Channel_A,1000);
-	Set_mixer(0B11110110);
-	for(i=0;i<16;i++)
-	{     
-		VPrintNumberO(0x1925,i,2,144); // 5,9    
-		SetVolume(AY_Channel_A,i);
-		WAIT(10);
-	}  
-	SetVolume(AY_Channel_A,0);
+	test_Volume(AY_Channel_A,0x1925);
 
 	WAIT(PAUSE_TIME);
 
-
-	Set_tone(AY_Channel_B,1000);
-	Set_mixer(0B00101101);
-	for(i=0;i<16;i++)
-	{ 
-		VPrintNumberO(0x192F,i,2,144); // 15,9    
-		SetVolume(AY_Channel_B,i);
-		WAIT(10);
-	}  
-	SetVolume(AY_Channel_B,0);
+	SetChannel(AY_Channel_A,OFF,OFF);
+	test_Volume(AY_Channel_B,0x192F);
 
 	WAIT(PAUSE_TIME);
 
-	Set_tone(AY_Channel_C,1000);
-	Set_mixer(0B00011011);
+	SetChannel(AY_Channel_B,OFF,OFF);
+	test_Volume(AY_Channel_C,0x1939);
+	
+	WAIT(PAUSE_TIME);    
+}
+
+
+
+void test_Volume(char channel, uint vaddr)
+{
+	char i;
+	
+	Set_tone(channel,C_Octave1);
+	SetChannel(channel,ON,ON);
+	ShowMixer();
+	
 	for(i=0;i<16;i++)
 	{  
-		VPrintNumberO(0x1939,i,2,144); //25,9
-		SetVolume(AY_Channel_C,i);
+		VPrintNumberO(vaddr,i,2,144); //25,9
+		SetVolume(channel,i);
 		WAIT(10);
 	}  
-	SetVolume(AY_Channel_C,0);
-
-	WAIT(PAUSE_TIME);    
+	SetVolume(channel,0);
 }
 
 
@@ -432,8 +469,8 @@ void test4(void)
 void test5(void)
 {
 	uint period=0;
-	char i;  
-	boolean isEnd=false;
+	
+	SOUND(AY_Mixer,0b00111111);		//Mixer channels OFF
 
 	VLOCATE(1,21);
 	VPRINT(">Test SetEnvelopePeriod      ");
@@ -443,23 +480,22 @@ void test5(void)
 	//LOCATE(0,8);
 	//PRINT(" Env Period:");
 
-	Set_tone(AY_Channel_A,1000);
-	Set_mixer(0B00111110); //Mixer
+	Set_tone(AY_Channel_A,C_Octave1);
+	//Set_mixer(0B00111110); //Mixer
+	SetChannel(AY_Channel_A,ON,OFF);
+	ShowMixer();
 	Set_Amp(AY_Channel_A,16);
 	Set_EnvShape(14);
 
-	while(!isEnd)
+	while(1)
 	{
+		HALT;
 		VPrintNumberO(0x1A10,period,5,144); //16,16
 
-		SetEnvelopePeriod(period++);
-
-		for(i=0;i<10;i++)
-		{
-			HALT;     
-			if (!(GetKeyMatrix(8)&Bit0)){isEnd=true;break;}
-		}    
-		//if (joytrig(0)) break;
+		SetEnvelopePeriod(period++);		
+		
+		if(period==0) break;
+		if (!(GetKeyMatrix(8)&Bit0)) break;
 	}
 
 	Set_Amp(AY_Channel_A,0);
@@ -473,23 +509,23 @@ void test5(void)
 void test6(void)
 {  
 	char i;
-
-	boolean isEnd=false;
+	
+	SOUND(AY_Mixer,0b00111111);		//Mixer channels OFF
 
 	VLOCATE(1,21);
 	VPRINT(">Test SetEnvelope           ");
 	VLOCATE(1,22);
 	VPRINT(text03);
 
-	Set_tone(AY_Channel_A,1000);
-	Set_mixer(0B00111110); //Mixer
+	Set_tone(AY_Channel_A,C_Octave1);
+	SetChannel(AY_Channel_A,ON,OFF);
+	ShowMixer();
+	//Set_mixer(0B00111110); //Mixer
 	Set_Amp(AY_Channel_A,16); //Enable sound envelope
 	Set_EnvPeriod(1024);
 
 	LOCATE(26,5);
 
-
-	//while(!isEnd)
 	for(i=0;i<16;i++)
 	{
 		Set_EnvShape(i);    
@@ -497,6 +533,9 @@ void test6(void)
 	}
 
 	Set_Amp(AY_Channel_A,0);
+	
+	SetChannel(AY_Channel_A,OFF,OFF);
+	ShowMixer();
 
 	WAIT(PAUSE_TIME);
 }
@@ -535,19 +574,8 @@ void Set_tone(char channel, uint period)
 
 void Set_Amp(char channel, char value)
 {
-	boolean envState;
-	uint vaddr=BASE5 + 5+(channel*10) + (9*32); //calculates the position of the numeric field
-
 	SetVolume(channel,value);
-	//SOUND(8+channel,value);
-
-	VPrintNumberO(vaddr,value,2,144); //5+(channel*10),12
-
-	if (value&Bit4) envState=true;
-	else envState=false;
-
-	//PRINTON(0x1927+(channel*10),envState); //Envelope     (value&Bit4)>>4
-	PrintSwitcher(7+(channel*10),9,envState);
+	ShowAmp(channel,value);
 }
 
 
@@ -575,13 +603,8 @@ void Set_EnvPeriod(uint period)
 
 void Set_EnvShape(char shape)
 {
-	char index = EnvelopeIndex[shape];
-
 	SetEnvelope(shape);			//envelope shape type
-	//SOUND(AY_EnvShape,shape); 
-
-	VPrintNumberO(0x1A30,shape,2,+144); //16,17
-	CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3); //19,17
+	ShowEnvelopeShape(shape);
 }
 
 
@@ -589,6 +612,14 @@ void Set_EnvShape(char shape)
 void Set_mixer(char value)
 {
     SOUND(AY_Mixer,value);
+	ShowMixer();
+}
+
+
+
+void ShowMixer(void)
+{
+    char value=GetSound(AY_Mixer);
     
 	PrintSwitcher(7,11,!(value&Bit0)); //tone  A
     PrintSwitcher(17,11,!(value&Bit1)); //tone  B
@@ -605,4 +636,80 @@ void PrintSwitcher(char col, char lin, boolean state)
 {
     VLOCATE(col,lin);
 	VPRINT(SwitcherTiles[state]);
+}
+
+
+
+void ShowAYregs(void)
+{
+	char value;
+	char valueCoarse;
+	uint period=0;
+	
+	ShowTone(AY_Channel_A);
+	ShowTone(AY_Channel_B);
+	ShowTone(AY_Channel_C);
+	
+	value=GetSound(AY_Noise);
+	VPrintNumberO(0x19CF,value,2,144); //15,14
+	
+	value=GetSound(AY_AmpA);
+	ShowAmp(AY_Channel_A,value);
+	value=GetSound(AY_AmpB);
+	ShowAmp(AY_Channel_B,value);
+	value=GetSound(AY_AmpC);
+	ShowAmp(AY_Channel_C,value);
+	
+	ShowMixer();
+	
+	value=GetSound(AY_EnvPeriod_fine);
+	valueCoarse=GetSound(AY_EnvPeriod_coarse);
+	period=(valueCoarse<<8)+value;
+	VPrintNumberO(0x1A10,period,5,144); //16,16	
+}
+
+
+void ShowTone(char channel)
+{
+	char valueFine;
+	char valueCoarse;
+	uint period=0;
+	
+	uint vaddr=BASE5 + 6+(channel*10) + (7*32); //calculates the position of the numeric field
+	if (channel==2) vaddr++;  // correct the position of the third column
+	
+	channel=channel*2;
+	valueFine=GetSound(channel++);
+	valueCoarse=GetSound(channel);
+	period=(valueCoarse<<8)+valueFine;
+
+	VPrintNumberO(vaddr,period,4,144);  //6+(channel*10),10
+}
+
+
+
+void ShowAmp(char channel, char value)
+{
+	boolean envState;
+	uint vaddr=BASE5 + 5+(channel*10) + (9*32); //calculates the position of the numeric field
+	
+	VPrintNumberO(vaddr,value,2,144); //5+(channel*10),12
+
+	if (value&Bit4) envState=true;
+	else envState=false;
+
+	PrintSwitcher(7+(channel*10),9,envState);
+}
+
+
+
+void ShowEnvelopeShape(char shape)
+{
+	char index;
+	
+	shape=shape&0x0F;
+	index = EnvelopeIndex[shape];
+
+	VPrintNumberO(0x1A30,shape,2,+144); //16,17
+	CopyToVRAM((uint) EnvelopeShapes + (index*3), 0x1A33, 3); //19,17
 }
