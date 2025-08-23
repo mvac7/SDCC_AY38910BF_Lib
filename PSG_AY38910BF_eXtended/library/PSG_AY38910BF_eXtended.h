@@ -53,20 +53,6 @@ void SetVolume(char channel, char volume);
 
 
 /* =============================================================================
-SetChannel
-Function:		SetChannel(channel, isTone, isNoise)
-Description:	Mixer. 
-				Enables or disables Tone and Noise on channels.
-Input:			[char] channel (0, 1 or 2)
-				[switcher] tone state (ON=enable;OFF=disable)
-				[switcher] noise state (ON=enable;OFF=disable)
-Output:			-
-============================================================================= */
-void SetChannel(char channel, switcher isTone, switcher isNoise);
-
-
-
-/* =============================================================================
 EnableEnvelope
 Function:		EnableEnvelope(channel, isEnvelope) 
 Description:	Enables or disables sound envelope on a channel.
@@ -75,6 +61,32 @@ Input:			[char] channel (0, 1 or 2)
 Output:			-
 ============================================================================= */
 void EnableEnvelope(char channel, switcher state);
+
+
+
+/* =============================================================================
+EnableTone
+Function:		EnableTone(channel, state)
+Description:	Mixer. 
+				Enables or disables Tone on channels.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] tone state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void EnableTone(char channel, switcher state);
+
+
+
+/* =============================================================================
+EnableNoise
+Function:		EnableNoise(channel, state)
+Description:	Mixer. 
+				Enables or disables Noise on channels.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] noise state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void EnableNoise(char channel, switcher state);
 
 
 

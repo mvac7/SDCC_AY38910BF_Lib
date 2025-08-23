@@ -16,7 +16,9 @@ Extension of the PSG_AY38910BF library.
 Adds specific functions to make it easier to write AY parameters.
  
 ## History of versions (dd/mm/yyyy):
-- v1.1 (14/08/2025) Added EnableEnvelope function
+- v1.1 (14/08/2025) 
+	- Added EnableEnvelope, EnableTone and EnableNoise functions
+	- Removed SetChannel function.
 - v1.0 (03/03/2025) First version
 ============================================================================= */
 
@@ -58,20 +60,6 @@ void SetNoisePeriod(char period){
 
 
 /* =============================================================================
-SetEnvelopePeriod
-Function:		SetEnvelopePeriod(period) 
-Description:	Set Envelope Period
-Input:			[unsigned int] period (0 - 65535) 
-Output:			-
-============================================================================= */
-void SetEnvelopePeriod(unsigned int period){
-	AYREGS[AY_EnvPeriod]=period & 0xFF;
-	AYREGS[AY_EnvPeriod+1]=period>>8;	//AYREGS[12]=(period & 0xFF00)/0xFF;
-}
-
-
-
-/* =============================================================================
 SetVolume
 Function:		SetVolume(channel, volume) 
 Description:	Set volume channel
@@ -84,6 +72,94 @@ void SetVolume(char channel, char volume)
 	if (channel>2) return;
 	AYREGS[AY_AmpA+channel]=volume;
 }
+
+
+
+/* =============================================================================
+EnableTone
+Function:		EnableTone(channel, state)
+Description:	Mixer. 
+				Enables or disables Tone channel.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] tone state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void EnableTone(char channel, switcher state) __naked
+{
+channel;	//A
+state;		//L
+__asm
+
+//if (channel>2) return;
+	cp   #3
+	ret  NC		//if A>=3 then ret
+
+	ld	 C,#0x01
+
+AYx_SETbitMIX:
+//	bit<<=channel;
+	ld   B,A			//channel value		
+	inc	 B
+	jr	 AYx_firstIter$
+AYx_gotoChannBit$:
+	sla	 C
+AYx_firstIter$:
+	djnz AYx_gotoChannBit$
+	
+//	newValue = AYREGS[AY_Mixer];
+	ld	 DE,#_AYREGS+7
+	ld	 A,(DE)
+
+//	if(state==ON) newValue&=~bit; 
+	bit	 0,L
+	jr	 Z,AYx_TONEOFF$
+//Tone channel ON	
+	ld	 B,A
+	ld	 A,C
+	cpl
+	and	 A,B
+
+	jr   AYx_TONEMIX$
+AYx_TONEOFF$:
+//Tone channel OFF
+//	else newValue|=bit;
+	or   A,C
+
+AYx_TONEMIX$:
+//	AYREGS[AY_Mixer] = newValue;
+	ld   (DE),A
+	
+	ret
+__endasm;
+}
+
+
+
+/* =============================================================================
+EnableNoise
+Function:		EnableNoise(channel, state)
+Description:	Mixer. 
+				Enables or disables noise on a channel.
+Input:			[char] channel (0, 1 or 2)
+				[switcher] noise state (ON=enable;OFF=disable)
+Output:			-
+============================================================================= */
+void EnableNoise(char channel, switcher state) __naked
+{
+channel;	//A
+state;		//L
+__asm
+
+//if (channel>2) return;
+	cp   #3
+	ret  NC		//>=3
+
+	ld	 C,#0b00001000
+	jr   AYx_SETbitMIX
+	
+__endasm;
+}
+
 
 
 
@@ -101,49 +177,23 @@ void EnableEnvelope(char channel, switcher state)
 	if (channel>2) return;
 	channel+=AY_AmpA;
 	value = AYREGS[channel];
-	if(state) value=value|0b00010000;
-	else value=value&0B00001111;
+	if(state) value|=0b00010000;
+	else value&=0B00001111;
 	AYREGS[channel]=value;
 }
 
 
 
 /* =============================================================================
-SetChannel
-Function:		SetChannel(channel, isTone, isNoise)
-Description:	Mixer. 
-				Enables or disables Tone and Noise on channels.
-Input:			[char] channel (0, 1 or 2)
-				[switcher] tone state (ON=enable;OFF=disable)
-				[switcher] noise state (ON=enable;OFF=disable)
+SetEnvelopePeriod
+Function:		SetEnvelopePeriod(period) 
+Description:	Set Envelope Period
+Input:			[unsigned int] period (0 - 65535) 
 Output:			-
 ============================================================================= */
-void SetChannel(char channel, switcher isTone, switcher isNoise)
-{
-	char newValue;
-
-	if (channel>2) return;
-
-	newValue = AYREGS[AY_Mixer];
-
-
-	//control of the two I/O bits of register 7 is done in the SOUND function
-	if(channel==0) 
-	{
-		if(isTone==ON){newValue&=254;}else{newValue|=1;}
-		if(isNoise==ON){newValue&=247;}else{newValue|=8;}
-	}
-	if(channel==1)    
-	{
-		if(isTone==ON){newValue&=253;}else{newValue|=2;}
-		if(isNoise==ON){newValue&=239;}else{newValue|=16;}
-	}
-	if(channel==2)
-	{ 
-		if(isTone==ON){newValue&=251;}else{newValue|=4;}
-		if(isNoise==ON){newValue&=223;}else{newValue|=32;}
-	}
-	AYREGS[AY_Mixer] = newValue;
+void SetEnvelopePeriod(unsigned int period){
+	AYREGS[AY_EnvPeriod]=period & 0xFF;
+	AYREGS[AY_EnvPeriod+1]=period>>8;	//AYREGS[12]=(period & 0xFF00)/0xFF;
 }
 
 

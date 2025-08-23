@@ -109,10 +109,11 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 | SetTonePeriod     | `SetTonePeriod(channel, period)` | Set Tone Period for any channel |
 | SetNoisePeriod    | `SetNoisePeriod(period)` | Set Noise Period |
 | SetVolume         | `SetVolume(channel, volume)` | Set volume channel |
-| SetChannel        | `SetChannel(channel, isTone, isNoise)` | Mixer. Enable/disable Tone and Noise channels   |
-| EnableEnvelope    | `EnableEnvelope(channel, isEnvelope)`  | Enables or disables sound envelope on a channel |
-| SetEnvelopePeriod | `SetEnvelopePeriod(period)` | Set Envelope Period |
-| SetEnvelope       | `SetEnvelope(shape)` | Set envelope shape |
+| EnableTone        | `EnableTone(channel, state)` | Mixer. Enables or disables Tone channel  |
+| EnableTone        | `EnableTone(channel, state)` | Mixer. Enables or disables noise on a channel |
+| EnableEnvelope    | `EnableEnvelope(channel, state)` | Enables or disables sound envelope on a channel |
+| SetEnvelopePeriod | `SetEnvelopePeriod(period)`      | Set Envelope Period |
+| SetEnvelope       | `SetEnvelope(shape)`             | Set envelope shape |
 
 <br/>
 
@@ -133,7 +134,7 @@ MSX 8K ROM
 [`Sourcecode`](PSG_AY38910BF/test)
 
 ![Test screenshot 1](docs/pics/TESTAYBF.1.png) 
-![Test screenshot 2](docs/pics/TESTAYBF.2.png) 
+![Test screenshot 2](docs/pics/TESTAYBF.2.png)<br/> 
 ![Test screenshot 3](docs/pics/TESTAYBF.3.png) 
 ![Test screenshot 4](docs/pics/TESTAYBF.4.png) 
 ![Test OpenMSX screenshot 5](docs/pics/openMSX_MFRPSG.png) 
