@@ -21,8 +21,6 @@ This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
 - **PSG_AY38910BF_eXtended** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
 
-It does not use the BIOS so it can be used to program for ROMs, MSX BASIC or MSX-DOS environments.
-
 PSG_AY38910BF includes the SOUND function with the same behavior as the command included in MSX BASIC, 
 while PSG_AY38910BF_eXtended contains specific functions to modify the different sound parameters of the AY.
 
@@ -57,7 +55,10 @@ Enjoy it!
 
 ### PSG_AY38910BF_eXtended Library
 
-- v1.0  (03/03/2025) First version
+- v1.1 (14/08/2025) 
+	- Added EnableEnvelope, EnableTone and EnableNoise functions
+	- Removed SetChannel function
+- v1.0 (03/03/2025) First version
 
 <br/>
 

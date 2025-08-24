@@ -51,8 +51,8 @@ PSG AY-3-8910 Buffer MSX SDCC Library (fR3eL Project)
 
 
 //AY port 
-#define AY_INTERNAL 0xA0	//Internal MSX PSG
-#define AY_EXTERNAL 0x10	//(MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others)
+#define AY_INTERNAL 0xA0	//MSX internal PSG
+#define AY_EXTERNAL 0x10	//External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others)
 
 
 

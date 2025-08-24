@@ -1,4 +1,4 @@
-# How to use the PSG_AY38910BF MSX SDCC Library
+# How to use the PSG AY38910 BF MSX SDCC Libraries
 
 ---
 
@@ -7,23 +7,34 @@
 - [1 Description](#1-Description)
 - [2 Requirements](#2-Requirements)
 - [3 AY Sound System](#3-AY-Sound-System)
-- [4 Definitions](#4-Definitions)
-   - [4.1 switcher Type](#41-SWITCHER-Type)
-   - [4.2 AY Type](#42-AY-Type)
-   - [4.3 AY Registers](#43-AY-Registers)
-   - [4.4 Envelope shapes](#44-Envelope-shapes)
-   - [4.5 AY channels](#45-AY-channels)
-- [5 Functions](#5-Functions)
-   - [5.1 InitAY](#51-InitAY)
-   - [5.2 SOUND](#52-SOUND)
-   - [5.3 GetSound](#53-GetSound)
-   - [5.4 SetTonePeriod](#54-SetTonePeriod)
-   - [5.5 SetNoisePeriod](#55-SetNoisePeriod)
-   - [5.6 SetEnvelopePeriod](#56-SetEnvelopePeriod)
-   - [5.7 SetVolume](#57-SetVolume)
-   - [5.8 SetChannel](#58-SetChannel)
-   - [5.9 PlayEnvelope](#59-PlayEnvelope)
-   - [5.10 PlayAY](#510-PlayAY)
+- [4 PSG_AY38910BF Library](#4-PSG_AY38910BF-Library)
+	- [4.1 Definitions](#41-Definitions)
+	   - [4.1.1 switcher Type](#411-SWITCHER-Type)
+	   - [4.1.2 AY Type](#412-AY-Type)
+	   - [4.1.3 AY Registers](#413-AY-Registers)
+	   - [4.1.4 Envelope shapes](#414-Envelope-shapes)
+	   - [4.1.5 AY channels](#415-AY-channels)
+	   - [4.1.6 AY port](#416-AY-port)
+	- [4.2 Functions](#42-Functions)
+	   - [4.2.1 InitAY](#421-InitAY)
+	   - [4.2.2 ClearDefAYbuffer](#422-ClearDefAYbuffer)
+	   - [4.2.3 ClearAYbuffer](#423-ClearAYbuffer)
+	   - [4.2.4 SOUND](#424-SOUND)
+	   - [4.2.5 GetSound](#425-GetSound)
+	   - [4.2.6 SilenceAY](#426-SilenceAY)
+	   - [4.2.7 SilenceAYbyPort](#427-SilenceAYbyPort)
+	   - [4.2.8 PlayAY](#428-PlayAY)
+	   - [4.2.9 Dump2AY](#429-Dump2AY)
+- [5 PSG_AY38910BF_eXtended Library](#5-PSG_AY38910BF_eXtended-Library)
+	- [5.1 Functions](#51-Functions)   
+	   - [5.1.1 SetTonePeriod](#511-SetTonePeriod)
+	   - [5.1.2 SetNoisePeriod](#512-SetNoisePeriod)
+	   - [5.1.3 SetVolume](#513-SetVolume)
+	   - [5.1.4 EnableTone](#514-EnableTone)
+	   - [5.1.5 EnableNoise](#515-EnableNoise)
+	   - [5.1.6 EnableEnvelope](#516-EnableEnvelope)   
+	   - [5.1.7 SetEnvelopePeriod](#517-SetEnvelopePeriod)
+	   - [5.1.8 SetEnvelope](#518-SetEnvelope)
 - [6 Set Internal or External AY](#6-Set-Internal-or-External-AY)
 - [7 How to use](#7-How-to-use)
 - [8 Appendices](#8-Appendices)
@@ -37,16 +48,14 @@
 
 ## 1 Description
 
-Library of functions to be able to play sounds and/or music with the PSG AY-3-8910.
+C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
 
 This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
-- **PSG_AY38910BF_Xfunctions** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
+- **PSG_AY38910BF_eXtended** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
 
-It does not use the BIOS so it can be used to program for ROMs, MSX BASIC or MSX-DOS environments.
-
-It incorporates the SOUND function with the same behavior as the command included in MSX BASIC, 
-as well as specific functions to modify the different sound parameters of the AY. 
+PSG_AY38910BF includes the SOUND function with the same behavior as the command included in MSX BASIC, 
+while PSG_AY38910BF_eXtended contains specific functions to modify the different sound parameters of the AY.
 
 Security control of the I/O port enable bits in the Mixer register.
 On some MSX computers that incorporate an AY-3-8910, they may be damaged if incorrect activation values ​​are written.
@@ -54,7 +63,8 @@ This library reads the port trigger values ​​and persists them, every time t
 
 These libraries are part of the [MSX fR3eL Project](https://github.com/mvac7/SDCC_MSX_fR3eL).
 
-Use them for developing MSX applications using Small Device C Compiler [`SDCC`](http://sdcc.sourceforge.net/).
+You can use this library to develop applications for ROM, MSXBASIC or MSX-DOS environments, 
+using the Small Device C Compiler [(SDCC)](http://sdcc.sourceforge.net/) cross compiler.
 
 This project is open source under the [MIT license](LICENSE).<br/>
 You can add part or all of this code in your application development or include it in other libraries/engines.
@@ -86,10 +96,15 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 
 ---
 
-## 4 Definitions
+## 4 PSG_AY38910BF Library
 
+This library includes only the functions necessary to play songs or effects (requires third-party libraries).
 
-### 4.1 switcher Type 
+<br/>
+
+### 4.1 Definitions
+
+#### 4.1.1 switcher Type 
 
 Data type definition to be used in SetChannel function (PSG_AY38910BF_Xfunctions Library).
 
@@ -100,7 +115,7 @@ ON    | 1
 
 <br/>
 
-### 4.2 AY Type 
+#### 4.1.2 AY Type 
 
 Label | Value | Description
 :---  | :---  | :--- 
@@ -109,7 +124,7 @@ AY_EXTERNAL | 0x10 | MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or oth
 
 <br/>
 
-### 4.3 AY Registers
+#### 4.1.3 AY Registers
 
 Label | Value | Description
 :---  | ---:  | :--- 
@@ -134,7 +149,7 @@ AY_EnvShape         | 13 | Envelope Shape
 
 <br/>
 
-### 4.4 Envelope shapes
+#### 4.1.4 Envelope shapes
 
 The header file defines envelope shapes in case you prefer to use it instead of the numerical form:
 
@@ -157,7 +172,7 @@ The Upper shape may be produced with the values: 4, 5, 6, 7 and 15.
 
 <br/>
 
-### 4.5 AY channels
+#### 4.1.5 AY channels
 
 You can use it in the functions: SetTonePeriod, SetVolume and SetChannel
 
@@ -169,17 +184,20 @@ AY_Channel_C | 2
 
 <br/> 
 
----
- 
-## 5 Functions
+#### 4.1.6 AY port
 
-### 5.1 PSG_AY38910BF
-
-This library includes only the functions necessary to play songs or effects (requires third-party libraries).
+Label       | Value | Description
+:---        | :---  | :---
+AY_INTERNAL | 0xA0  | Internal PSG
+AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others)
 
 <br/> 
 
-#### 5.1.1 InitAY
+---
+ 
+### 4.2 Functions
+
+#### 4.2.1 InitAY
 
 <table>
 <tr><th colspan=2 align="left">InitAY</th></tr>
@@ -189,7 +207,7 @@ This library includes only the functions necessary to play songs or effects (req
 <tr><th>Output</th><td> --- </td></tr>
 </table>
 
-#### Example:
+##### Example:
 
 ```c
 	InitAY();
@@ -197,7 +215,83 @@ This library includes only the functions necessary to play songs or effects (req
 
 <br/> 
 
-#### 5.2 SilenceAY
+#### 4.2.2 ClearDefAYbuffer
+
+<table>
+<tr><th colspan=2 align="left">ClearDefAYbuffer</th></tr>
+<tr><td colspan="2">Clear default AY buffer (AYREGS).</td></tr>
+<tr><th>Function</th><td>ClearDefAYbuffer()</td></tr>
+<tr><th>Input</th><td> --- </td></tr>
+<tr><th>Output</th><td> --- </td></tr>
+</table>
+
+##### Example:
+
+```c
+	ClearDefAYbuffer();
+```
+
+<br/> 
+
+#### 4.2.3 ClearAYbuffer
+
+<table>
+<tr><th colspan=3 align="left">ClearAYbuffer</th></tr>
+<tr><td colspan=3>Clear indicated AY buffer</td></tr>
+<tr><th>Function</th><td colspan=2>ClearAYbuffer(bufferADDR)</td></tr>
+<tr><th>Input</th><td>unsigned int</td><td>buffer address of AY registers</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+##### Example:
+
+```c
+	char AYREGS_plus[14];	// buffer for second AY
+	ClearAYbuffer((unsigned int) AYREGS_plus);
+```
+
+<br/> 
+
+#### 4.2.4 SOUND
+
+<table>
+<tr><th colspan=3 align="left">SOUND</th></tr>
+<tr><td colspan=3>Writes a value to the PSG register buffer.</td></tr>
+<tr><th>Function</th><td colspan=2>SOUND(register, value)</td></tr>
+<tr><th rowspan=2>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
+<tr><td>[char]</td><td>value</td></tr>
+<tr><th>Output</th><td colspan=2> --- </td></tr>
+</table>
+
+##### Example:
+
+```c
+	SOUND(8,16);		//channel A envelope on
+	SOUND(AY_Noise,31);	//Set noise period
+```
+
+<br/> 
+
+#### 4.2.5 GetSound
+
+<table>
+<tr><th colspan=3 align="left">GetSound</th></tr>
+<tr><td colspan=3>Read PSG register value (from buffer).</td></tr>
+<tr><th>Function</th><td colspan=2>GetSound(register)</td></tr>
+<tr><th>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
+<tr><th>Output</th><td>[char]</td><td>value</td></tr>
+</table>
+
+##### Example:
+
+```c
+	char value;            
+	value = GetSound(8);	//read register 8 (Channel Volume A)
+```
+
+<br/> 
+
+#### 4.2.6 SilenceAY
 
 <table>
 <tr><th colspan=3 align="left">SilenceAY</th></tr>
@@ -207,7 +301,7 @@ This library includes only the functions necessary to play songs or effects (req
 <tr><th>Output</th><td colspan=2> --- </td></tr>
 </table>
 
-#### Example:
+##### Example:
 
 ```c
 	SilenceAY();	//SilenceAYbyPort(AY_IOport);
@@ -215,7 +309,7 @@ This library includes only the functions necessary to play songs or effects (req
 
 <br/> 
 
-#### 5.3 SilenceAYbyPort
+#### 4.2.7 SilenceAYbyPort
 
 <table>
 <tr><th colspan=3 align="left">SilenceAY</th></tr>
@@ -226,7 +320,7 @@ This is indicated for the case of playing sound dynamically between AYs (Interna
 <tr><th>Output</th><td colspan=2> --- </td></tr>
 </table>
 
-#### Example:
+##### Example:
 
 ```c
 	SilenceAYbyPort(AY_INTERNAL);	//silence internal AY
@@ -238,46 +332,7 @@ This is indicated for the case of playing sound dynamically between AYs (Interna
 
 <br/> 
 
-#### 5.4 SOUND
-
-<table>
-<tr><th colspan=3 align="left">SOUND</th></tr>
-<tr><td colspan=3>Writes a value to the PSG register buffer.</td></tr>
-<tr><th>Function</th><td colspan=2>SOUND(register, value)</td></tr>
-<tr><th rowspan=2>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
-<tr><td>[char]</td><td>value</td></tr>
-<tr><th>Output</th><td colspan=2> --- </td></tr>
-</table>
-
-#### Example:
-
-```c
-	SOUND(8,16);		//channel A envelope on
-	SOUND(AY_Noise,31);	//Set noise period
-```
-
-<br/> 
-
-### 5.5 GetSound
-
-<table>
-<tr><th colspan=3 align="left">GetSound</th></tr>
-<tr><td colspan=3>Read PSG register value (from buffer).</td></tr>
-<tr><th>Function</th><td colspan=2>GetSound(register)</td></tr>
-<tr><th>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
-<tr><th>Output</th><td>[char]</td><td>value</td></tr>
-</table>
-
-#### Example:
-
-```c
-	char value;            
-	value = GetSound(8);	//read register 8 (Channel Volume A)
-```
-
-<br/> 
-
-### 5.6 PlayAY
+#### 4.2.8 PlayAY
 
 <table>
 <tr><th colspan=2 align="left">PlayAY</th></tr>
@@ -287,7 +342,7 @@ This is indicated for the case of playing sound dynamically between AYs (Interna
 <tr><th>Output</th><td> --- </td></tr>
 </table>
 
-#### Example:
+##### Example:
 
 ```c
 	PlayAY();
@@ -303,7 +358,7 @@ It has been included to ensure that whether we use it with a Player or independe
 
 <br/> 
 
-### 5.7 Dump2AY
+#### 4.2.9 Dump2AY
 
 <table>
 <tr><th colspan=3 align="left">Dump2AY</th></tr>
@@ -314,7 +369,7 @@ It has been included to ensure that whether we use it with a Player or independe
 <tr><th>Output</th><td colspan=2> --- </td></tr>
 </table>
 
-#### Example:
+##### Example:
 
 ```c
 	char AYREGS_plus[14];	// buffer for second AY
@@ -335,7 +390,20 @@ While PlayAY is designed for when we use a single AY, Dump2AY allows us to have 
 
 ---
 
-### 5.2 PSG_AY38910BF_Xfunctions
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 5 PSG_AY38910BF_eXtended Library
 
 This library adds specific functions to make it easier to write AY parameters. 
 
@@ -343,7 +411,9 @@ Requires the PSG_AY38910BF library.
 
 <br/> 
 
-### 5.2.1 SetTonePeriod
+### 5.1 Functions
+
+#### 5.1.1 SetTonePeriod
 
 <table>
 <tr><th colspan=3 align="left">SetTonePeriod</th></tr>
@@ -363,7 +433,7 @@ Requires the PSG_AY38910BF library.
 
 <br/> 
 
-### 5.2.2 SetNoisePeriod
+#### 5.1.2 SetNoisePeriod
 
 <table>
 <tr><th colspan=3 align="left">SetNoisePeriod</th></tr>
@@ -381,25 +451,7 @@ Requires the PSG_AY38910BF library.
 
 <br/> 
 
-### 5.2.3 SetEnvelopePeriod
-
-<table>
-<tr><th colspan=3 align="left">SetEnvelopePeriod</th></tr>
-<tr><td colspan=3>Set Envelope Period</td></tr>
-<tr><th>Function</th><td colspan=2>SetEnvelopePeriod(period)</td></tr>
-<tr><th>Input</th><td>[unsigned int]</td><td>period (0 - 65535)</td></tr>
-<tr><th>Output</th><td colspan=2> --- </td></tr>
-</table>
-
-#### Example:
-
-```c
-	SetEnvelopePeriod(1000);
-```
-
-<br/> 
-
-### 5.2.4 SetVolume
+#### 5.1.3 SetVolume
 
 <table>
 <tr><th colspan=3 align="left">SetVolume</th></tr>
@@ -418,29 +470,89 @@ Requires the PSG_AY38910BF library.
 
 <br/> 
 
-### 5.2.5 SetChannel
+### 5.1.4 EnableTone
 
 <table>
-<tr><th colspan=3 align="left">SetChannel</th></tr>
-<tr><td colspan=3>Mixer. Enable/disable Tone and Noise channels.</td></tr>
-<tr><th>Function</th><td colspan=2>SetChannel(channel, isTone, isNoise)</td></tr>
-<tr><th rowspan=3>Input</th><td>[char]</td><td>channel (0, 1 or 2)</td></tr>
-<tr><td>[switcher]</td><td>Tone channel state</td></tr>
-<tr><td>[switcher]</td><td>Noise channel state</td></tr>
+<tr><th colspan=3 align="left">EnableTone</th></tr>
+<tr><td colspan=3>Mixer. Enables or disables Tone channel.</td></tr>
+<tr><th>Function</th><td colspan=2>EnableTone(channel, state)</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>channel (0, 1 or 2)</td></tr>
+<tr><td>switcher</td><td>state (ON=enable;OFF=disable)</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+#### Example:
+
+```c
+	EnableTone(0,ON);
+	EnableTone(1,ON);
+	EnableTone(AY_Channel_C,OFF);
+```
+
+<br/> 
+
+### 5.1.5 EnableNoise
+
+<table>
+<tr><th colspan=3 align="left">EnableNoise</th></tr>
+<tr><td colspan=3>Mixer. Enables or disables noise on a channel.</td></tr>
+<tr><th>Function</th><td colspan=2>EnableNoise(channel, state)</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>channel (0, 1 or 2)</td></tr>
+<tr><td>switcher</td><td>state (ON=enable;OFF=disable)</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+#### Example:
+
+```c
+	EnableNoise(AY_Channel_A,ON);
+	EnableNoise(AY_Channel_B,OFF);
+	EnableNoise(AY_Channel_C,OFF);
+```
+
+<br/> 
+
+### 5.1.6 EnableEnvelope
+
+<table>
+<tr><th colspan=3 align="left">EnableEnvelope</th></tr>
+<tr><td colspan=3>Enables or disables sound envelope on a channel.</td></tr>
+<tr><th>Function</th><td colspan=2>EnableEnvelope(channel, state)</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>channel (0, 1 or 2)</td></tr>
+<tr><td>switcher</td><td>state (ON=enable;OFF=disable)</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+#### Example:
+
+```c
+	EnableEnvelope(AY_Channel_A,OFF);
+	EnableEnvelope(AY_Channel_B,ON);
+	EnableEnvelope(AY_Channel_C,OFF);
+```
+
+<br/> 
+
+#### 5.1.7 SetEnvelopePeriod
+
+<table>
+<tr><th colspan=3 align="left">SetEnvelopePeriod</th></tr>
+<tr><td colspan=3>Set Envelope Period</td></tr>
+<tr><th>Function</th><td colspan=2>SetEnvelopePeriod(period)</td></tr>
+<tr><th>Input</th><td>[unsigned int]</td><td>period (0 - 65535)</td></tr>
 <tr><th>Output</th><td colspan=2> --- </td></tr>
 </table>
 
 #### Example:
 
 ```c
-	SetChannel(0,ON,OFF);
-	SetChannel(1,ON,ON);
-	SetChannel(2,OFF,OFF);
+	SetEnvelopePeriod(1000);
 ```
 
 <br/> 
 
-### 5.2.6 PlayEnvelope
+
+#### 5.1.6 PlayEnvelope
 
 <table>
 <tr><th colspan=3 align="left">PlayEnvelope</th></tr>
@@ -517,11 +629,6 @@ This is the way to go when using song players like PT3player.
 This library provides functionality to use a second external AY sound processor.
 This may come included in hardware such as the MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others.
 It allows dumping data from the main buffer or a second buffer to either of the two PSGs.
-
-
-
-
-
 
 
 

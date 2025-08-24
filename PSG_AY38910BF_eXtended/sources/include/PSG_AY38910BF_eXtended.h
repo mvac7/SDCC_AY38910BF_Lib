@@ -80,7 +80,7 @@ void EnableNoise(char channel, switcher state);
 
 /* =============================================================================
 EnableEnvelope
-Function:		EnableEnvelope(channel, isEnvelope) 
+Function:		EnableEnvelope(channel, state) 
 Description:	Enables or disables sound envelope on a channel.
 Input:			[char] channel (0, 1 or 2)
 				[switcher] Envelope state (ON=enable;OFF=disable)
