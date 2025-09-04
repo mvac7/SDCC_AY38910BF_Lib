@@ -19,13 +19,12 @@ void main(void)
 {
 	unsigned int period=0;
 		
-	InitAY();    						//Init library (set default AY and clear Buffer)
-	AY_IOport=AY_EXTERNAL;				//Set extern AY
+	InitInternalAY();    				//Init library (set default AY and clear Buffer)
 	
 	SetNoisePeriod(20);					//Set noise period
-	//SetVolume(AY_Channel_A,16);		//channel A envelope on
 	EnableEnvelope(AY_Channel_A,ON);	//channel A envelope on
-	SetChannel(AY_Channel_A,ON,ON);		//Enable Tone and Noise in channel A
+	EnableTone(AY_Channel_A,ON);		//Enable Tone on channel A
+	EnableNoise(AY_Channel_A,ON);		//Enable Noise on channel A
 	SetEnvelopePeriod(1000);			//Set envelope period
 	SetEnvelope(14);					//Set envelope shape
 

@@ -15,10 +15,10 @@
 void main(void)
 {
 	unsigned int time = 10*50;					//10 seconds in PAL
-	unsigned int tone = 1000;
+	unsigned int tone = 0x06AE;					//C Octave 1
 	unsigned int envPeriod = 700;
 	
-	InitAY();    								/* Init library. Set default AY (internal) 
+	InitInternalAY();    						/* Init library. Set default AY (internal) 
 												   and clear Buffer */
 	
 	SOUND(AY_ToneA_fine,tone&0xFF);				//Set channel A fine tune period (8b)

@@ -57,9 +57,13 @@ void test_AYLIB_page1(void);
 void test_AYLIB_page2(void);
 void test_AYLIB_page3(void);
 void test_AYLIB_page4(void);
+void test_AYLIB_page5(void);
+void test_AYLIB_page6(void);
 
 void SetFullSound(void);
 void TestGetSound(void);
+
+void ShowDefAYregs(void);
 
 unsigned int GetPeriod(char fine, char coarse);
 
@@ -111,6 +115,8 @@ void main(void)
 	test_AYLIB_page2();
 	test_AYLIB_page3();
 	test_AYLIB_page4();
+	test_AYLIB_page5();
+	test_AYLIB_page6();
 
 	CLS();
 	PRINT("END");
@@ -189,9 +195,9 @@ void test_AYLIB_page1(void)
 {
 	PrintHeader();
 	
-	PrintLN(">InitAY()");
-	PrintLN(" Set default AY (internal)");
-	InitAY();    								//Init library. Set default AY (internal) 
+	PrintLN(">InitInternalAY()");
+	PrintLN(" Set default AY (internal) and\n AYREGS buffer");
+	InitInternalAY();    								//Init library. Set default AY (internal) 
 	
 	WAIT(100);
 	
@@ -217,12 +223,13 @@ void test_AYLIB_page2(void)
 {
 	PrintHeader();
 	
-	PrintLN(">ClearDefAYbuffer()");
-	ClearDefAYbuffer();
-	PlayAY();
+	PrintLN(">ClearAY()");
+	ClearAY();
 	WAIT(50);
-	TestGetSound();
-
+	ShowDefAYregs();
+	WAIT(100);
+	PrintLN(">PlayAY()");
+	PlayAY();
 
 	PressAnyKey();
 }
@@ -244,8 +251,10 @@ void test_AYLIB_page3(void)
 	PrintLine(32);
 	
 	PrintLN(">Select external AY");
-	PrintLN(" AY_IOport=AY_EXTERNAL");
-	AY_IOport = AY_EXTERNAL;	
+	PrintLN(" SelectAY(AY_EXTERNAL)");
+	SelectAY(AY_EXTERNAL);
+	//PrintLN(" AY_defIOport=AY_EXTERNAL");
+	//AY_defIOport = AY_EXTERNAL;
 	WAIT(100);
 	
 	PrintLN(">Write buffer with SOUND()");
@@ -257,7 +266,7 @@ void test_AYLIB_page3(void)
 	
 	PressAnyKey();
 	
-	ClearDefAYbuffer();
+	ClearAY();
 	PlayAY();
 }
 
@@ -270,8 +279,10 @@ void test_AYLIB_page4(void)
 	PrintLN("Test 2 AY at a time."); 
 	
 	PrintLN("\n>Select internal AY");
-	PrintLN(" AY_IOport=AY_INTERNAL");
-	AY_IOport = AY_INTERNAL;	
+	PrintLN(" SelectAY(AY_INTERNAL)");
+	SelectAY(AY_INTERNAL);
+//	PrintLN(" AY_defIOport=AY_INTERNAL");
+//	AY_defIOport = AY_INTERNAL;	
 	WAIT(100);
 	
 	PrintLN(">Write buffer with SOUND()");
@@ -280,29 +291,52 @@ void test_AYLIB_page4(void)
 	
 	PRINT(">Play external AY with Dump2AY()");
 	WAIT(50);
-	Dump2AY(AY_EXTERNAL, (unsigned int) AYREGS);
-	WAIT(100);
+	Dump2AY(AY_EXTERNAL, AY_defAYREGs_addr);
+	WAIT(200);
 		
 	PrintLN(">Play internal AY with PlayAY()");
 	PlayAY();
 	
 	WAIT(200);
 	
-	PrintLN("");
-	PrintLine(32);
-	PrintLN(">Silence external AY");
+	PressAnyKey();
+}
+
+
+
+void test_AYLIB_page5(void)
+{
+	PrintHeader();
+	
+	PrintLN("Test Silence AYs"); 
+	
+	PrintLN("\n>Silence external AY");
 	WAIT(50);
-	PrintLN(" SilenceAYbyPort(AY_EXTERNAL)");
-	SilenceAYbyPort(AY_EXTERNAL);
-	WAIT(100);
-	PrintLN(">Silence Internal");
-	WAIT(50);
-	PrintLN(" SilenceAY()");
-	SilenceAY();
-	WAIT(100);
+	PrintLN("\n SilenceAYbuffer(AY_EXTERNAL,\n AY_defAYREGs_addr)\n");
+	SilenceAYbuffer(AY_EXTERNAL,AY_defAYREGs_addr);
+	ShowDefAYregs();	
 	
 	PressAnyKey();
 }
+
+
+
+void test_AYLIB_page6(void)
+{
+	PrintHeader();
+	
+	PrintLN("Test Silence AYs"); 
+	
+	PrintLN("\n>Silence Internal");
+	WAIT(50);
+	PrintLN("\n SilenceAY()\n");
+	SilenceAY();
+	ShowDefAYregs();
+//	WAIT(100);
+	
+	PressAnyKey();
+}
+
 
 
 
@@ -312,6 +346,7 @@ void SetFullSound(void)
 	unsigned int time = 10*50;					//10 seconds in PAL
 	unsigned int toneC1 = 0x06AE;				//C note/octave 1
 	unsigned int toneD2 = 0x02FA;				//D note/octave 2
+	unsigned int toneE3 = 0x0153;				//E note/octave 3
 	unsigned int envPeriod = 700;
 	
 //write to the buffer
@@ -319,8 +354,8 @@ void SetFullSound(void)
 	SOUND(AY_ToneA_coarse,toneC1>>8);			//Set channel A coarse tune period (4b)
 	SOUND(AY_ToneB_fine,toneD2&0xFF);			//Set channel B fine tune period (8b)
 	SOUND(AY_ToneB_coarse,toneD2>>8);			//Set channel B coarse tune period (4b)
-	SOUND(AY_ToneC_fine,toneD2&0xFF);			//Set channel C fine tune period (8b)
-	SOUND(AY_ToneC_coarse,toneD2>>8);			//Set channel C coarse tune period (4b)
+	SOUND(AY_ToneC_fine,toneE3&0xFF);			//Set channel C fine tune period (8b)
+	SOUND(AY_ToneC_coarse,toneE3>>8);			//Set channel C coarse tune period (4b)
 	SOUND(AY_Noise,20);							//Set noise period
 	SOUND(AY_AmpA,12);							//Set volume on channel A
 	SOUND(AY_AmpB,14);							//Set volume on channel B
@@ -334,6 +369,13 @@ void SetFullSound(void)
 
 
 void TestGetSound(void)
+{
+	ShowDefAYregs();
+}
+
+
+
+void ShowDefAYregs(void)
 {
 	char fine;
 	char coarse;

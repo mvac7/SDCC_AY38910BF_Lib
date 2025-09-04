@@ -9,22 +9,29 @@
 - [3 AY Sound System](#3-AY-Sound-System)
 - [4 PSG_AY38910BF Library](#4-PSG_AY38910BF-Library)
 	- [4.1 Definitions](#41-Definitions)
-	   - [4.1.1 switcher Type](#411-SWITCHER-Type)
-	   - [4.1.2 AY Type](#412-AY-Type)
-	   - [4.1.3 AY Registers](#413-AY-Registers)
-	   - [4.1.4 Envelope shapes](#414-Envelope-shapes)
-	   - [4.1.5 AY channels](#415-AY-channels)
-	   - [4.1.6 AY port](#416-AY-port)
+		- [4.1.1 switcher Type](#411-SWITCHER-Type)
+		- [4.1.2 AY Type](#412-AY-Type)
+		- [4.1.3 AY Registers](#413-AY-Registers)
+		- [4.1.4 Envelope shapes](#414-Envelope-shapes)
+		- [4.1.5 AY channels](#415-AY-channels)
+		- [4.1.6 AY port](#416-AY-port)
 	- [4.2 Functions](#42-Functions)
-	   - [4.2.1 InitAY](#421-InitAY)
-	   - [4.2.2 ClearDefAYbuffer](#422-ClearDefAYbuffer)
-	   - [4.2.3 ClearAYbuffer](#423-ClearAYbuffer)
-	   - [4.2.4 SOUND](#424-SOUND)
-	   - [4.2.5 GetSound](#425-GetSound)
-	   - [4.2.6 SilenceAY](#426-SilenceAY)
-	   - [4.2.7 SilenceAYbyPort](#427-SilenceAYbyPort)
-	   - [4.2.8 PlayAY](#428-PlayAY)
-	   - [4.2.9 Dump2AY](#429-Dump2AY)
+		- [4.2.1 SelectAY](#421-SelectAY)
+		- [4.2.2 InitAY](#422-InitAY)
+		- [4.2.3 InitInternalAY](#423-InitInternalAY)
+		
+		- [4.2.4 ClearDefAYbuffer](#424-ClearDefAYbuffer)		
+		- [4.2.5 ClearAYbuffer](#425-ClearAYbuffer)
+		
+		- [4.2.5 SOUND](#425-SOUND)
+		- [4.2.6 GetSound](#426-GetSound)
+
+		- [4.2.7 PlayAY](#427-PlayAY)
+		- [4.2.8 Dump2AY](#428-Dump2AY)
+		
+		- [4.2.9 SilenceAY](#429-SilenceAY)
+		- [4.2.10 SilenceAYbuffer](#4210-SilenceAYbuffer)
+		
 - [5 PSG_AY38910BF_eXtended Library](#5-PSG_AY38910BF_eXtended-Library)
 	- [5.1 Functions](#51-Functions)   
 	   - [5.1.1 SetTonePeriod](#511-SetTonePeriod)
@@ -197,14 +204,32 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
  
 ### 4.2 Functions
 
-#### 4.2.1 InitAY
+#### 4.2.1 SelectAY
 
 <table>
-<tr><th colspan=2 align="left">InitAY</th></tr>
+<tr><th colspan=2 align="left">SelectAY</th></tr>
+<tr><td colspan="2">Select the default AY using the index port value.</td></tr>
+<tr><th>Function</th><td>SelectAY()</td></tr>
+<tr><th>Input</th><td>char</td><td>AY index port<br/>(0xA0 for internal or 0x10 for external)</td></tr>
+<tr><th>Output</th><td> - </td></tr>
+</table>
+
+##### Example:
+
+```c
+	SelectAY(AY_EXTERNAL);
+```
+
+<br/> 
+
+#### 4.2.2 InitInternalAY
+
+<table>
+<tr><th colspan=2 align="left">InitInternalAY</th></tr>
 <tr><td colspan="2">Initialize the library.<br/>Set default AY (internal) and clear buffer.</td></tr>
-<tr><th>Function</th><td>InitAY()</td></tr>
-<tr><th>Input</th><td> --- </td></tr>
-<tr><th>Output</th><td> --- </td></tr>
+<tr><th>Function</th><td>InitInternalAY()</td></tr>
+<tr><th>Input</th><td> - </td></tr>
+<tr><th>Output</th><td> - </td></tr>
 </table>
 
 ##### Example:
@@ -215,14 +240,35 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 
 <br/> 
 
-#### 4.2.2 ClearDefAYbuffer
+#### 4.2.3 InitAY
+
+<table>
+<tr><th colspan=3 align="left">InitAY</th></tr>
+<tr><td colspan=3>Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer.</td></tr>
+<tr><th>Function</th><td colspan=2>InitAY(AY_port, bufferADDR)</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>AY index port<br/>(0xA0 for internal or 0x10 for external)</td></tr>
+<tr><td>unsigned int</td><td>buffer address of AY registers</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+##### Example:
+
+```c
+	char AYREGS_plus[14];	// buffer for second AY
+	InitAY(AY_EXTERNAL,(unsigned int) AYREGS_plus);
+```
+
+
+<br/> 
+
+#### 4.2.4 ClearDefAYbuffer
 
 <table>
 <tr><th colspan=2 align="left">ClearDefAYbuffer</th></tr>
-<tr><td colspan="2">Clear default AY buffer (AYREGS).</td></tr>
+<tr><td colspan="2">Initializes default buffer of AY registers.</td></tr>
 <tr><th>Function</th><td>ClearDefAYbuffer()</td></tr>
-<tr><th>Input</th><td> --- </td></tr>
-<tr><th>Output</th><td> --- </td></tr>
+<tr><th>Input</th><td> - </td></tr>
+<tr><th>Output</th><td> - </td></tr>
 </table>
 
 ##### Example:
@@ -233,13 +279,13 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 
 <br/> 
 
-#### 4.2.3 ClearAYbuffer
+#### 4.2.5 ClearAYbuffer
 
 <table>
 <tr><th colspan=3 align="left">ClearAYbuffer</th></tr>
-<tr><td colspan=3>Clear indicated AY buffer</td></tr>
+<tr><td colspan=3>Initializes a buffer of AY registers</td></tr>
 <tr><th>Function</th><td colspan=2>ClearAYbuffer(bufferADDR)</td></tr>
-<tr><th>Input</th><td>unsigned int</td><td>buffer address of AY registers</td></tr>
+<tr><th>Input</th><td>unsigned int</td><td>memory address of AY buffer</td></tr>
 <tr><th>Output</th><td colspan=2> - </td></tr>
 </table>
 
@@ -252,15 +298,15 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 
 <br/> 
 
-#### 4.2.4 SOUND
+#### 4.2.6 SOUND
 
 <table>
 <tr><th colspan=3 align="left">SOUND</th></tr>
-<tr><td colspan=3>Writes a value to the PSG register buffer.</td></tr>
+<tr><td colspan=3>Writes a value to the AY buffer.</td></tr>
 <tr><th>Function</th><td colspan=2>SOUND(register, value)</td></tr>
-<tr><th rowspan=2>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
-<tr><td>[char]</td><td>value</td></tr>
-<tr><th>Output</th><td colspan=2> --- </td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>register number (0 to 13)</td></tr>
+<tr><td>char</td><td>value</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
 </table>
 
 ##### Example:
@@ -272,14 +318,14 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 
 <br/> 
 
-#### 4.2.5 GetSound
+#### 4.2.7 GetSound
 
 <table>
 <tr><th colspan=3 align="left">GetSound</th></tr>
-<tr><td colspan=3>Read PSG register value (from buffer).</td></tr>
+<tr><td colspan=3>Read a register value from the AY buffer.</td></tr>
 <tr><th>Function</th><td colspan=2>GetSound(register)</td></tr>
-<tr><th>Input</th><td>[char]</td><td>register number (0 to 13)</td></tr>
-<tr><th>Output</th><td>[char]</td><td>value</td></tr>
+<tr><th>Input</th><td>char</td><td>register number (0 to 13)</td></tr>
+<tr><th>Output</th><td>char</td><td>value</td></tr>
 </table>
 
 ##### Example:
@@ -291,56 +337,31 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 
 <br/> 
 
-#### 4.2.6 SilenceAY
-
-<table>
-<tr><th colspan=3 align="left">SilenceAY</th></tr>
-<tr><td colspan=3>Silences selected AY sound processor.</td></tr>
-<tr><th>Function</th><td colspan=2>SilenceAY()</td></tr>
-<tr><th>Input</th><td colspan=2> --- </td></tr>
-<tr><th>Output</th><td colspan=2> --- </td></tr>
-</table>
-
-##### Example:
-
-```c
-	SilenceAY();	//SilenceAYbyPort(AY_IOport);
-```
-
-<br/> 
-
-#### 4.2.7 SilenceAYbyPort
-
-<table>
-<tr><th colspan=3 align="left">SilenceAY</th></tr>
-<tr><td colspan=3>Silences the indicated AY sound processor.<br/>Set to zero the amplitude value by writing directly to the AY registers.<br/>
-This is indicated for the case of playing sound dynamically between AYs (Internal/External), so that the last written values ​​do not sound infinitely.</td></tr>
-<tr><th>Function</th><td colspan=2>SilenceAY(AY_port)</td></tr>
-<tr><th>Input</th><td>[char]</td><td>AY index port</td></tr>
-<tr><th>Output</th><td colspan=2> --- </td></tr>
-</table>
-
-##### Example:
-
-```c
-	SilenceAYbyPort(AY_INTERNAL);	//silence internal AY
-```
-
-```c
-	SilenceAYbyPort(0x10);			//silence external AY (MEGAFLASHROM SCC+, Flashjacks or others)
-```
-
-<br/> 
-
-#### 4.2.8 PlayAY
+#### 4.2.7 PlayAY
 
 <table>
 <tr><th colspan=2 align="left">PlayAY</th></tr>
-<tr><td colspan="2">Send data from AYREGS buffer to AY registers.<br/>(Execute on each interruption of VBLANK or when you want to throw in a change in sound.).</td></tr>
+<tr><td colspan="2">Dump default AY buffer to default AY.<br/>Execute on each interruption of VBLANK or when you want to throw in a change in sound.</td></tr>
 <tr><th>Function</th><td>PlayAY()</td></tr>
-<tr><th>Input</th><td> --- </td></tr>
-<tr><th>Output</th><td> --- </td></tr>
+<tr><th>Input</th><td> - </td></tr>
+<tr><th>Output</th><td> - </td></tr>
 </table>
+
+##### Attention!
+
+PlayAY uses the Dump2AY function with the AY I/O port number and buffer configured in the library.
+
+It includes a control that Dump2AY doesn't have: it adds a flag to register 13 (envelope shape) after playing.
+
+This is necessary because this function is designed to be executed on every frame, preventing the envelope from being triggered continuously, thus avoiding the generation of an unwanted sound.
+
+It is likely that the music or sound effects player control this problem.
+
+Remember that once you write to register 13, it is the PSG that applies the envelope according to the waveform and period parameters.
+
+It has been included to ensure that whether we use it with a Player or independently this problem does not occur.
+
+<br/> 
 
 ##### Example:
 
@@ -350,24 +371,25 @@ This is indicated for the case of playing sound dynamically between AYs (Interna
 
 <br/> 
 
-PlayAY uses the Dump2AY function with the configured AY I/O port number and the library's internal buffer.
-It includes a control that Dump2AY does not have. It disables the envelope once it has been triggered.
-This is necessary because this function is designed to be executed on every frame, preventing the envelope from being triggered continuously, thus avoiding the generation of an unwanted sound. 
-It is likely that the music or sound effects player control this problem. 
-It has been included to ensure that whether we use it with a Player or independently this problem does not occur.
-
-<br/> 
-
-#### 4.2.9 Dump2AY
+#### 4.2.8 Dump2AY
 
 <table>
 <tr><th colspan=3 align="left">Dump2AY</th></tr>
-<tr><td colspan=3>Dump a buffer to the indicated AY. <br/>(Execute on each interruption of VBLANK or when you want to throw in a change in sound.).</td></tr>
+<tr><td colspan=3>Dump a buffer to the indicated AY.<br/>(Execute on each interruption of VBLANK or when you want to throw in a change in sound.).</td></tr>
 <tr><th>Function</th><td colspan=2>Dump2AY(AY_port, bufferADDR)</td></tr>
-<tr><th rowspan=2>Input</th><td>[char]</td><td>AY index port</td></tr>
-<tr><td>[unsigned int]</td><td>buffer address of AY registers</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>AY index port</td></tr>
+<tr><td>unsigned int</td><td>buffer address of AY registers</td></tr>
 <tr><th>Output</th><td colspan=2> --- </td></tr>
 </table>
+
+##### Attention!
+
+While PlayAY is designed for when we use a single AY, Dump2AY allows us to have more control of the output and take advantage of a second AY.
+
+This function does not disable the envelope trigger (register 13).
+It is intended for when you use two AYs simultaneously playing a song and FX. You must first transfer the registers to the second AY with this function and then to the main AY with PlayAY.
+
+<br/> 
 
 ##### Example:
 
@@ -378,30 +400,57 @@ It has been included to ensure that whether we use it with a Player or independe
 	AYREGS_plus[AY_ToneA+1]=freqval>>8;
 	AYREGS_plus[AY_Noise]=22;
 	AYREGS_plus[AY_AmpA]=15;
-	AYREGS_plus[AY_Mixer]=0b10110110;	
+	AYREGS_plus[AY_Mixer]=0b10110110;	//0-->ON;1-->OFF
 	Dump2AY(AY_EXTERNAL,(unsigned int) AYREGS_plus);
+```
+
+<br/>
+
+#### 4.2.9 SilenceAY
+
+<table>
+<tr><th colspan=3 align="left">SilenceAY</th></tr>
+<tr><td colspan=3>Silences default AY sound processor.<br/>Run SilenceAYbuffer with the default port and buffer parameters.</td></tr>
+<tr><th>Function</th><td colspan=2>SilenceAY()</td></tr>
+<tr><th>Input</th><td colspan=2> - </td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+##### Example:
+
+```c
+	SilenceAY();
 ```
 
 <br/> 
 
-While PlayAY is designed for when we use a single AY, Dump2AY allows us to have more control of the output and take advantage of a second AY.
+#### 4.2.10 SilenceAYbuffer
+
+<table>
+<tr><th colspan=3 align="left">SilenceAYbuffer</th></tr>
+<tr><td colspan=3>Silences an AY sound processor.<br/>
+It resets the amplitude value of the three channels to zero and dumps it to the AY.<br/>
+This is indicated for the case of playing sound dynamically between AYs (Internal/External), so that the last written values ​​do not sound infinitely.</td></tr>
+<tr><th>Function</th><td colspan=2>SilenceAYbuffer(port,bufferADDR)</td></tr>
+<tr><th rowspan=2>Input</th><td>char</td><td>AY index port</td></tr>
+<tr><td>unsigned int</td><td>buffer address of AY registers</td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
+</table>
+
+##### Example:
+
+```c
+	SilenceAYbuffer(AY_INTERNAL,AY_defAYREGs_addr);			//silence internal AY
+```
+
+```c
+	char AYREGS_plus[14];	// buffer for second AY
+	SilenceAYbuffer(0x10, (unsigned int) AYREGS_plus);		//silence external AY (MEGAFLASHROM SCC+, Flashjacks or others)
+```
 
 <br/> 
 
 ---
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## 5 PSG_AY38910BF_eXtended Library
 

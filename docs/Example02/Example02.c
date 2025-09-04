@@ -44,18 +44,19 @@ void main(void)
 	char step=0;
 	char track=0;
 	char note=0;
-
 		
-	InitAY();    						/* Init library. Set default AY (internal) 
+	InitInternalAY();  					/* Init library. Set default AY (internal) 
 										   and clear Buffer */
-	//AY_IOport=AY_EXTERNAL;			//uncomment for test extern AY
+	//InitAY(AY_EXTERNAL, (unsigned int) AYREGS);			//uncomment for test extern AY
 	
 	SetNoisePeriod(4);					//Set noise period
 
-	SetChannel(AY_Channel_A,ON,OFF);	//Enable Tone and Noise in channel A
+	//EnableTone(AY_Channel_A,ON);		//Enable Tone in channel A
+	//EnableNoise(AY_Channel_A,OFF);	//Enable Noise in channel A
 
 	EnableEnvelope(AY_Channel_C,ON);
 	SetTonePeriod(AY_Channel_C, 0x0D5D);	//Set channel A tone period	(C note · Octave 0)
+
 
 	//8 tracks; 16 steps
 	while(track<8)
@@ -66,7 +67,7 @@ void main(void)
 		if(frame==0)
 		{
 			//Play Drums in chanel C
-			if((step&0b00000011)==0) SetKick();		//0,4,8,12
+			if((step&0b00000011)==0) SetKick();	//0,4,8,12
 			if((step&0b00000011)==2) SetHihat();	//2,6,10,14
 
 			//Play tone in channel A
@@ -84,6 +85,9 @@ void main(void)
 		if(frame>15) frame=0;		
 	}
 	//SilenceAY();						//Stop any sound!
+
+	
+//	while(1) HALT;
 }
 
 
@@ -91,7 +95,8 @@ void main(void)
 void SetKick(void)
 {
 	SetEnvelopePeriod(1024);
-	SetChannel(AY_Channel_C,ON,OFF);			//Enable Tone and Noise in channel C
+	EnableTone(AY_Channel_C,ON);		//Enable Tone in channel C
+	EnableNoise(AY_Channel_C,OFF);		//Enable Noise in channel C
 	SetEnvelope(AY_ENV_LowerBeat);
 }
 
@@ -100,6 +105,7 @@ void SetKick(void)
 void SetHihat(void)
 {
 	SetEnvelopePeriod(808);
-	SetChannel(AY_Channel_C,OFF,ON);			//Enable Tone and Noise in channel C
+	EnableTone(AY_Channel_C,OFF);		//Enable Tone in channel C
+	EnableNoise(AY_Channel_C,ON);		//Enable Noise in channel C
 	SetEnvelope(AY_ENV_LowerBeat);
 }

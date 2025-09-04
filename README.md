@@ -89,32 +89,34 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 
 ### PSG_AY38910BF Library
 
-| Name | Declaration | Description |
-| ---  | ---         | ---         |
-| InitAY    | `InitAY()` | Initialize the library. Set default AY (internal) and clear buffer. |
-| ClearDefAYbuffer | `ClearDefAYbuffer()` | Clear default AY buffer (AYREGS) |
-| ClearAYbuffer    | `ClearAYbuffer(bufferADDR)` | Clear indicated AY buffer |
-| SOUND     | `SOUND(char reg, char value)` | Writes a value to the PSG register buffer |
-| GetSound  | `char GetSound(char reg)` | Read PSG register value (from buffer) |
-| PlayAY    | `PlayAY()` | Copy buffer to selected AY (AY_IOport) |
-| Dump2AY   | `Dump2AY(char AY_port, unsigned int bufferADDR)` | Dump a buffer to the indicated AY |
-| SilenceAY | `SilenceAY()` | Silences the indicated AY sound processor. |
-| SilenceAYbyPort | `SilenceAYbyPort(char AY_port)` | Silences the indicated AY sound processor. |
+| Function | Function Prototype | Description |
+| :--- | :--- | :--- |
+| SelectAY  | `SelectAY(char port)` | Select the default AY using the index port value. |
+| InitInternalAY   | `InitInternalAY()` | Initialize the library.<br/>Select as default the internal AY and the library AY buffer.<br/>Also initialize the buffer.  |
+| InitAY    | `InitAY(char port, unsigned int bufferADDR)` | Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer. |
+| ClearDefAYbuffer | `ClearDefAYbuffer()` | Initializes default buffer of AY registers |
+| ClearAYbuffer    | `ClearAYbuffer(unsigned int bufferADDR)` | Initializes a buffer of AY registers |
+| SOUND     | `SOUND(char reg, char value)` | Writes a value to the AY buffer |
+| GetSound  | `char GetSound(char reg)` | Read a register value from the AY buffer |
+| PlayAY    | `PlayAY()` | Dump default AY buffer to default AY. |
+| Dump2AY   | `Dump2AY(char AY_port, unsigned int bufferADDR)` | Dump an AY buffer to the indicated AY |
+| SilenceAY | `SilenceAY()` | Silences default AY sound processor. |
+| SilenceAYbuffer | `SilenceAYbuffer(char AY_port, unsigned int bufferADDR)` | Silences an AY sound processor. |
 
 <br/>
 
 ### PSG_AY38910BF_eXtended Library
 
-| Name | Declaration | Description |
-| ---  | ---         | ---         |
-| SetTonePeriod     | `SetTonePeriod(channel, period)` | Set Tone Period for any channel |
-| SetNoisePeriod    | `SetNoisePeriod(period)` | Set Noise Period |
-| SetVolume         | `SetVolume(channel, volume)` | Set volume channel |
-| EnableTone        | `EnableTone(channel, state)` | Mixer. Enables or disables Tone channel  |
-| EnableTone        | `EnableTone(channel, state)` | Mixer. Enables or disables noise on a channel |
-| EnableEnvelope    | `EnableEnvelope(channel, state)` | Enables or disables sound envelope on a channel |
-| SetEnvelopePeriod | `SetEnvelopePeriod(period)`      | Set Envelope Period |
-| SetEnvelope       | `SetEnvelope(shape)`             | Set envelope shape |
+| Function | Function Prototype | Description |
+| :--- | :--- | :--- |
+| SetTonePeriod     | `SetTonePeriod(char channel, unsigned int period)` | Set Tone Period for any channel |
+| SetNoisePeriod    | `SetNoisePeriod(char period)` | Set Noise Period |
+| SetVolume         | `SetVolume(char channel, char volume)` | Set volume channel |
+| EnableTone        | `EnableTone(char channel, switcher state)` | Mixer. Enables or disables Tone channel  |
+| EnableTone        | `EnableTone(char channel, switcher state)` | Mixer. Enables or disables noise on a channel |
+| EnableEnvelope    | `EnableEnvelope(char channel, switcher state)` | Enables or disables sound envelope on a channel |
+| SetEnvelopePeriod | `SetEnvelopePeriod(unsigned int period)` | Set Envelope Period |
+| SetEnvelope       | `SetEnvelope(char shape)` | Set envelope shape |
 
 <br/>
 

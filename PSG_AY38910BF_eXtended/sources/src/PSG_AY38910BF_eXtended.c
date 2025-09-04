@@ -9,7 +9,7 @@
 - Compiler: SDCC 4.4 
 - Library: fR3eL Project
 
-##Description:  
+## Description:  
 PSG AY-3-8910 Buffer eXtended functions MSX SDCC Library (fR3eL Project)
 Extension of the PSG_AY38910BF library.
  
@@ -36,12 +36,28 @@ Input:			[char] channel (0, 1 or 2)
 				[unsigned int] period (0 - 4095)
 Output:			-
 ============================================================================= */
-void SetTonePeriod(char channel, unsigned int period)
+void SetTonePeriod(char channel, unsigned int period) __naked
 {
-	if (channel>2) return;
+/*	if (channel>2) return;
 	channel=channel*2;
 	AYREGS[channel++]=period & 0xFF;
 	AYREGS[channel]=period>>8;	//AYREGS[reg+1]=(period & 0xFF00)/0xFF;
+*/
+channel;
+period;
+__asm
+	cp   #3
+	ret  NC		//if A>=3 then ret
+
+	sla  A		//*2
+
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:DE
+	ld   (HL),E
+	inc  HL
+	ld   (HL),D
+	ret
+	
+__endasm;	
 }
 
 
@@ -53,8 +69,17 @@ Description:	Set Noise Period
 Input:			[char] period (0 - 31) 
 Output:			-
 ============================================================================= */
-void SetNoisePeriod(char period){
-	AYREGS[AY_Noise]=period;
+void SetNoisePeriod(char period) __naked
+{
+//	AYREGS[AY_Noise]=period;
+period;		//A
+__asm
+	ld   E,A
+	ld   A,#AY_Noise
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:BC
+	ld   (HL),E		
+	ret
+__endasm;	
 }
 
 
@@ -67,10 +92,38 @@ Input:			[char] channel (0, 1 or 2)
 				[char] volume, 0 to 15 or 16 for activate envelope
 Output:			-
 ============================================================================= */
-void SetVolume(char channel, char volume)
+void SetVolume(char channel, char volume) __naked
 {
-	if (channel>2) return;
-	AYREGS[AY_AmpA+channel]=volume;
+//	if (channel>2) return;
+//	AYREGS[AY_AmpA+channel]=volume;
+channel;	//A
+volume;		//L
+__asm
+
+//if (channel>2) return;
+	cp   #3
+	ret  NC		//if A>=3 then ret
+
+	add  A,#AY_AmpA
+	
+	ld   E,L	//copy volume value to E
+
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:BC
+	ld   (HL),E		
+	ret
+	
+/* -------------------------------------
+A - num reg
+E - value
+------------------------------------- */
+/*AY_SetValue:
+	ld   C,A
+	ld   B,#0
+	ld   HL,(AY_defAYREGs_addr)	
+	add  HL,BC
+	ld   (HL),E		
+	ret*/
+__endasm;
 }
 
 
@@ -94,7 +147,7 @@ __asm
 	cp   #3
 	ret  NC		//if A>=3 then ret
 
-	ld	 C,#0x01
+	ld	 C,#0b00000001
 
 AYx_SETbitMIX:
 //	bit<<=channel;
@@ -107,8 +160,8 @@ AYx_firstIter$:
 	djnz AYx_gotoChannBit$
 	
 //	newValue = AYREGS[AY_Mixer];
-	ld	 DE,#_AYREGS+7
-	ld	 A,(DE)
+	ld   IY,(#_AY_defAYREGs_addr)
+	ld	 A,AY_Mixer(IY)
 
 //	if(state==ON) newValue&=~bit; 
 	bit	 0,L
@@ -118,8 +171,8 @@ AYx_firstIter$:
 	ld	 A,C
 	cpl
 	and	 A,B
-
 	jr   AYx_TONEMIX$
+	
 AYx_TONEOFF$:
 //Tone channel OFF
 //	else newValue|=bit;
@@ -127,7 +180,8 @@ AYx_TONEOFF$:
 
 AYx_TONEMIX$:
 //	AYREGS[AY_Mixer] = newValue;
-	ld   (DE),A
+//	ld   (DE),A
+	ld	 AY_Mixer(IY),A
 	
 	ret
 __endasm;
@@ -149,17 +203,15 @@ void EnableNoise(char channel, switcher state) __naked
 channel;	//A
 state;		//L
 __asm
-
 //if (channel>2) return;
 	cp   #3
 	ret  NC		//>=3
 
 	ld	 C,#0b00001000
-	jr   AYx_SETbitMIX
+	jp   AYx_SETbitMIX
 	
 __endasm;
 }
-
 
 
 
@@ -171,15 +223,42 @@ Input:			[char] channel (0, 1 or 2)
 				[switcher] Envelope state (ON=enable;OFF=disable)
 Output:			-
 ============================================================================= */
-void EnableEnvelope(char channel, switcher state)
+void EnableEnvelope(char channel, switcher state) __naked
 {
-	char value;
+/*	char value;
 	if (channel>2) return;
 	channel+=AY_AmpA;
 	value = AYREGS[channel];
 	if(state) value|=0b00010000;
 	else value&=0B00001111;
 	AYREGS[channel]=value;
+*/
+channel;	//A
+state;		//L
+__asm	
+//if (channel>2) return;
+	cp   #3
+	ret  NC		//if A>=3 then ret
+
+	ld   E,L	//copy volume to E
+
+	add  A,#AY_AmpA				//num AY reg. = AmpA reg(8) + channel(0-2)
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:BC
+	ld   A,(HL)
+	
+//	if(state==ON)
+	bit	 0,E
+	jr	 Z,AYx_enveOFF$
+//value|=0b00010000;
+	or   #0b00010000
+	jr   AYx_enveSET$
+AYx_enveOFF$:
+//value&=0B00001111;
+	and  #0B00001111
+AYx_enveSET$:
+	ld  (HL),A
+	ret	
+__endasm;
 }
 
 
@@ -191,9 +270,20 @@ Description:	Set Envelope Period
 Input:			[unsigned int] period (0 - 65535) 
 Output:			-
 ============================================================================= */
-void SetEnvelopePeriod(unsigned int period){
-	AYREGS[AY_EnvPeriod]=period & 0xFF;
-	AYREGS[AY_EnvPeriod+1]=period>>8;	//AYREGS[12]=(period & 0xFF00)/0xFF;
+void SetEnvelopePeriod(unsigned int period) __naked
+{
+//	AYREGS[AY_EnvPeriod]=period & 0xFF;
+//	AYREGS[AY_EnvPeriod+1]=period>>8;	//AYREGS[12]=(period & 0xFF00)/0xFF;
+period;	//HL
+__asm
+	ex   DE,HL
+	ld   A,#AY_EnvPeriod
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:BC
+	ld   (HL),E
+	inc  HL
+	ld   (HL),D
+	ret	
+__endasm;	
 }
 
 
@@ -209,6 +299,13 @@ Output:			-
 ============================================================================= */
 void SetEnvelope(char shape)
 {
-	AYREGS[AY_EnvShape]=shape;
+//	AYREGS[AY_EnvShape]=shape;
+shape;		//A
+__asm
+	ld   E,A
+	ld   A,#AY_EnvShape
+	call AY_getAYBUFaddrByReg		//A-->reg;-->HL=addr;regs:BC
+	ld   (HL),E		
+	ret
+__endasm;
 }
-

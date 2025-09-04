@@ -105,7 +105,7 @@ void main(void)
 	char result;
 	char AYtype = 0;
 
-	InitAY();    //Clear AY Buffer
+	InitInternalAY();
 
 	POKE(LINL32,32); //Width(32)
 	COLOR(BLACK,GRAY,DARK_BLUE);      
@@ -129,9 +129,9 @@ void main(void)
 	result = INKEY();
 
 	if (result==89 || result==121){
-		AY_IOport=AY_EXTERNAL;
+		SelectAY(AY_EXTERNAL);
 		AYtype++;
-	}else	AY_IOport=AY_INTERNAL;
+	}else	SelectAY(AY_INTERNAL);
 
 	unWRLE2toVRAM16((uint) GUI_MAP,BASE5+96); //show screen map
 	
@@ -305,7 +305,7 @@ void test1(void)
 	LOCATE(27,22);
 	INKEY();
 
-	ClearDefAYbuffer();
+	ClearAY();
 	ShowAYregs();
 	value=GetSound(AY_EnvShape);
 	ShowEnvelopeShape(value);
