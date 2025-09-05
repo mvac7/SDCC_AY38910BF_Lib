@@ -105,7 +105,7 @@ void main(void)
 	char result;
 	char AYtype = 0;
 
-	InitInternalAY();
+	InitAY();
 
 	POKE(LINL32,32); //Width(32)
 	COLOR(BLACK,GRAY,DARK_BLUE);      

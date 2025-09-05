@@ -6,14 +6,13 @@
 - Compiler: SDCC 4.4
 
 ## Description:
-	Simple example of the PSG_AY38910BF + PSG_AY38910BF_eXtended Libraries 
-	(fR3eL Project)
+Example where a rhythm and a melody are generated using the libraries 
+PSG_AY38910BF and PSG_AY38910BF_eXtended
 ============================================================================= */
 #include "PSG_AY38910BF.h"
 #include "PSG_AY38910BF_eXtended.h"
 
 #define  HALT	 __asm halt __endasm
-
 
 
 // WF: Cosine Unsigned Length=32 Min=4 Max=12 Phase=0 Freq=1
@@ -32,10 +31,8 @@ const unsigned int toneFreqz[]={
 //0x0357,0x0327,0x02FA,0x02CF,0x02AF,0x0281,0x025D,0x023B,0x021B,0x01FC,0x01E0,0x01C5};	//Octave 2
 
 
-
 void SetKick(void);
 void SetHihat(void);
-
 
 
 void main(void)
@@ -45,17 +42,21 @@ void main(void)
 	char track=0;
 	char note=0;
 		
-	InitInternalAY();  					/* Init library. Set default AY (internal) 
+	InitAY();  							/* Init library. Set default AY (internal) 
 										   and clear Buffer */
-	//InitAY(AY_EXTERNAL, (unsigned int) AYREGS);			//uncomment for test extern AY
+	//InitAYbuffer(AY_EXTERNAL, (unsigned int) AYREGS);			//option for test extern AY
 	
 	SetNoisePeriod(4);					//Set noise period
 
-	//EnableTone(AY_Channel_A,ON);		//Enable Tone in channel A
-	//EnableNoise(AY_Channel_A,OFF);	//Enable Noise in channel A
+/* ------------------------------------------------------------------
+This code is not necessary since the initialization by default leaves 
+the tone enabled on all three channels and disables the noise.
+	EnableTone(AY_Channel_A,ON);	//Enable Tone in channel A
+	EnableNoise(AY_Channel_A,OFF);	//Enable Noise in channel A
+------------------------------------------------------------------ */
 
 	EnableEnvelope(AY_Channel_C,ON);
-	SetTonePeriod(AY_Channel_C, 0x0D5D);	//Set channel A tone period	(C note · Octave 0)
+	SetTonePeriod(AY_Channel_C,0x0D5D);	//Set channel A tone period	(C note · Octave 0)
 
 
 	//8 tracks; 16 steps
@@ -67,7 +68,7 @@ void main(void)
 		if(frame==0)
 		{
 			//Play Drums in chanel C
-			if((step&0b00000011)==0) SetKick();	//0,4,8,12
+			if((step&0b00000011)==0) SetKick();		//0,4,8,12
 			if((step&0b00000011)==2) SetHihat();	//2,6,10,14
 
 			//Play tone in channel A
@@ -79,19 +80,17 @@ void main(void)
 			if(step>15){step=0;track++;}
 		}
 		
-		if(note>0) SetVolume(AY_Channel_A,InstrEnvelop[frame]);
+		if(note>0) SetVolume(AY_Channel_A,InstrEnvelop[frame]);	//Change the volume to generate an envelope
 		
 		frame++;
 		if(frame>15) frame=0;		
 	}
 	//SilenceAY();						//Stop any sound!
 
-	
-//	while(1) HALT;
 }
 
 
-
+//This function will trigger a Drum-like sound the next time PlayAY is run.
 void SetKick(void)
 {
 	SetEnvelopePeriod(1024);
@@ -101,7 +100,7 @@ void SetKick(void)
 }
 
 
-
+//This function will trigger a Hihat-like sound the next time PlayAY is run.
 void SetHihat(void)
 {
 	SetEnvelopePeriod(808);

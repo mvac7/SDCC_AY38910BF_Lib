@@ -18,20 +18,15 @@
 	- [4.2 Functions](#42-Functions)
 		- [4.2.1 SelectAY](#421-SelectAY)
 		- [4.2.2 InitAY](#422-InitAY)
-		- [4.2.3 InitInternalAY](#423-InitInternalAY)
-		
+		- [4.2.3 InitInternalAY](#423-InitInternalAY)		
 		- [4.2.4 ClearDefAYbuffer](#424-ClearDefAYbuffer)		
-		- [4.2.5 ClearAYbuffer](#425-ClearAYbuffer)
-		
+		- [4.2.5 ClearAYbuffer](#425-ClearAYbuffer)		
 		- [4.2.5 SOUND](#425-SOUND)
 		- [4.2.6 GetSound](#426-GetSound)
-
 		- [4.2.7 PlayAY](#427-PlayAY)
-		- [4.2.8 Dump2AY](#428-Dump2AY)
-		
+		- [4.2.8 Dump2AY](#428-Dump2AY)		
 		- [4.2.9 SilenceAY](#429-SilenceAY)
-		- [4.2.10 SilenceAYbuffer](#4210-SilenceAYbuffer)
-		
+		- [4.2.10 SilenceAYbuffer](#4210-SilenceAYbuffer)		
 - [5 PSG_AY38910BF_eXtended Library](#5-PSG_AY38910BF_eXtended-Library)
 	- [5.1 Functions](#51-Functions)   
 	   - [5.1.1 SetTonePeriod](#511-SetTonePeriod)
@@ -58,7 +53,7 @@
 C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
 
 This project consists of two libraries that complement each other:
-- **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
+- **PSG_AY38910BF** Basic functions for initializing, editing and playing sound. It is the basis of the fR3eL Project audio system to be able to reproduce music and effects in game development (requires third-party libraries).
 - **PSG_AY38910BF_eXtended** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
 
 PSG_AY38910BF includes the SOUND function with the same behavior as the command included in MSX BASIC, 
@@ -688,48 +683,203 @@ It allows dumping data from the main buffer or a second buffer to either of the 
 
 ### Examples
 
-#### Test0.c 
+#### Example01.c 
+
+Perform a simple test of the library, where a sound effect is played using the SOUND function.
 
 ```c
-#include "../include/PSG_AY38910BF.h"
+/* =============================================================================
+# Example01
+
+- Architecture: MSX
+- Format: 8K ROM
+- Compiler: SDCC 4.4
+
+## Description:
+Perform a simple test of the library, where a sound effect is played using 
+the SOUND function.
+============================================================================= */
+#include "PSG_AY38910BF.h"
 
 #define  HALT	 __asm halt __endasm
 
 void main(void)
 {
-	unsigned int time = 10*50;	//10 seg in PAL
+	unsigned int time = 10*50;					//10 seconds in PAL
+	unsigned int tone = 0x06AE;					//C Octave 1
+	unsigned int envPeriod = 700;
 	
-	InitAY();    //Init library (set default AY and clear Buffer)
+	InitAY();    								/* Init library. Set default AY (internal) 
+												   and clear Buffer */
 	
-	SOUND(AY_ToneA_fine,1000&0xFF);
-	SOUND(AY_ToneA_coarse,1000>>8);
-	SOUND(AY_Noise,20);
-	SOUND(AY_AmpA,16);
-	SOUND(AY_Mixer,0B00110110);
-	SOUND(AY_EnvPeriod_fine,700&0xFF);
-	SOUND(AY_EnvPeriod_coarse,700>>8);
-	SOUND(AY_EnvShape,AY_ENV_UpperTriangle);
+	SOUND(AY_ToneA_fine,tone&0xFF);				//Set channel A fine tune period (8b)
+	SOUND(AY_ToneA_coarse,tone>>8);				//Set channel A coarse tune period (4b)
+	SOUND(AY_Noise,20);							//Set noise period
+	SOUND(AY_AmpA,16);							//Enable envelope
+	SOUND(AY_Mixer,0B00110110);					//Enable Tone and Noise in channel A
+	SOUND(AY_EnvPeriod_fine,envPeriod&0xFF);	//Set fine tune envelope period (8b)
+	SOUND(AY_EnvPeriod_coarse,envPeriod>>8);	//Set coarse tune envelope period (8b)
+	SOUND(AY_EnvShape,AY_ENV_UpperTriangle);	//Set envelope shape
 	
-	PlayAY();
+	PlayAY();									//Dump AY buffer to PSG (the sound is played)
 	
-	while(time-->0) HALT;
+	while(time-->0) HALT;						//wait 10secs.
 }
 ```
 
 To compile you will need to run these two statements from the command line (for Windows OS):
 
 ```bat
-sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel Test0.c
-hex2bin -e bin -l 4000 Test0.ihx
+sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel Example01.c
+hex2bin -e bin -l 4000 Example01.ihx
 ```
 
 <br/>
 
-#### Test1.c
+#### Example02.c
+
+Example where a rhythm and a melody are generated using the libraries PSG_AY38910BF and PSG_AY38910BF_eXtended
 
 ```c
-#include "../include/PSG_AY38910BF.h"
-#include "../include/PSG_AY38910BF_Xfunctions.h"
+/* =============================================================================
+# Example02
+
+- Architecture: MSX
+- Format: 8K ROM
+- Compiler: SDCC 4.4
+
+## Description:
+Example where a rhythm and a melody are generated using the libraries 
+PSG_AY38910BF and PSG_AY38910BF_eXtended
+============================================================================= */
+#include "PSG_AY38910BF.h"
+#include "PSG_AY38910BF_eXtended.h"
+
+#define  HALT	 __asm halt __endasm
+
+
+// WF: Cosine Unsigned Length=32 Min=4 Max=12 Phase=0 Freq=1
+const char InstrEnvelop[]={
+0x0C,0x0C,0x0C,0x0B,0x0B,0x0A,0x09,0x09,0x08,0x07,0x06,0x06,0x05,0x05,0x04,0x04};
+
+//0=Silent;1=C;2=C#;3=D;4=D#;5=E;6=F;7=F#;8=G;9=G#;10=A;11=A#;12=B
+const char pattern00[]={
+	1,1,0,1,1,0,3,4,
+	1,1,0,1,1,0,5,4};
+
+//tone period by note (0-11) octave 1
+const unsigned int toneFreqz[]={
+0,
+0x06AE,0x064E,0x05F4,0x059E,0x054D,0x0501,0x04B9,0x0475,0x0435,0x03F9,0x03C0,0x038A};	//octave 1
+//0x0357,0x0327,0x02FA,0x02CF,0x02AF,0x0281,0x025D,0x023B,0x021B,0x01FC,0x01E0,0x01C5};	//Octave 2
+
+
+void SetKick(void);
+void SetHihat(void);
+
+
+void main(void)
+{
+	char frame=0;
+	char step=0;
+	char track=0;
+	char note=0;
+		
+	InitAY();  							/* Init library. Set default AY (internal) 
+										   and clear Buffer */
+	//InitAYbuffer(AY_EXTERNAL, (unsigned int) AYREGS);			//option for test extern AY
+	
+	SetNoisePeriod(4);					//Set noise period
+
+/* ------------------------------------------------------------------
+This code is not necessary since the initialization by default leaves 
+the tone enabled on all three channels and disables the noise.
+	EnableTone(AY_Channel_A,ON);	//Enable Tone in channel A
+	EnableNoise(AY_Channel_A,OFF);	//Enable Noise in channel A
+------------------------------------------------------------------ */
+
+	EnableEnvelope(AY_Channel_C,ON);
+	SetTonePeriod(AY_Channel_C,0x0D5D);	//Set channel A tone period	(C note · Octave 0)
+
+
+	//8 tracks; 16 steps
+	while(track<8)
+	{
+		HALT;
+		PlayAY();						//Dump AY buffer to PSG (the sound is played)
+		
+		if(frame==0)
+		{
+			//Play Drums in chanel C
+			if((step&0b00000011)==0) SetKick();		//0,4,8,12
+			if((step&0b00000011)==2) SetHihat();	//2,6,10,14
+
+			//Play tone in channel A
+			note=pattern00[step];
+			if(note==0) SetVolume(AY_Channel_A,0);
+			else SetTonePeriod(AY_Channel_A, toneFreqz[note]);	//Set channel A tone period
+				
+			step++;
+			if(step>15){step=0;track++;}
+		}
+		
+		if(note>0) SetVolume(AY_Channel_A,InstrEnvelop[frame]);	//Change the volume to generate an envelope
+		
+		frame++;
+		if(frame>15) frame=0;		
+	}
+	//SilenceAY();						//Stop any sound!
+
+}
+
+
+//This function will trigger a Drum-like sound the next time PlayAY is run.
+void SetKick(void)
+{
+	SetEnvelopePeriod(1024);
+	EnableTone(AY_Channel_C,ON);		//Enable Tone in channel C
+	EnableNoise(AY_Channel_C,OFF);		//Enable Noise in channel C
+	SetEnvelope(AY_ENV_LowerBeat);
+}
+
+
+//This function will trigger a Hihat-like sound the next time PlayAY is run.
+void SetHihat(void)
+{
+	SetEnvelopePeriod(808);
+	EnableTone(AY_Channel_C,OFF);		//Enable Tone in channel C
+	EnableNoise(AY_Channel_C,ON);		//Enable Noise in channel C
+	SetEnvelope(AY_ENV_LowerBeat);
+}
+```
+
+To compile you will need to run these two statements from the command line (for Windows OS):
+
+```bat
+sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel PSG_AY38910BF_Xfunctions.rel Example02.c
+hex2bin -e bin -l 4000 Example02.ihx
+```
+
+<br/>
+
+#### Example03.c
+
+Example of playing a sound on two AYs simultaneously (internal and external).
+
+```c
+/* =============================================================================
+# Example03
+
+- Architecture: MSX
+- Format: 8K ROM
+- Compiler: SDCC 4.4
+- Library: fR3eL Project
+
+## Description:
+Example of playing a sound on two AYs simultaneously (internal and external).
+============================================================================= */
+#include "PSG_AY38910BF.h"
+#include "PSG_AY38910BF_eXtended.h"
 
 #define  HALT	 __asm halt __endasm
 
@@ -737,72 +887,35 @@ void main(void)
 {
 	unsigned int period=0;
 		
-	InitAY();    			//Init library (set default AY and clear Buffer)
-	AY_IOport=AY_EXTERNAL;	//Set extern AY
+	InitAY();    						/* Init library. Set default AY (internal) 
+										   and clear Buffer */
 	
-	SetNoisePeriod(20);
-	SetVolume(AY_Channel_A,16); //channel A envelope on
-	SetChannel(AY_Channel_A,ON,ON);
-	SetEnvelopePeriod(1000);
-	SetEnvelope(14);
+	SetNoisePeriod(20);					//Set noise period
+	EnableEnvelope(AY_Channel_A,ON);	//channel A envelope on
+	EnableTone(AY_Channel_A,ON);		//Enable Tone on channel A
+	EnableNoise(AY_Channel_A,ON);		//Enable Noise on channel A
+	SetEnvelopePeriod(1000);			//Set envelope period
+	SetEnvelope(AY_ENV_UpperTriangle);	//Set envelope shape
 
 	while(period<4096)
 	{
 		HALT;
-		PlayAY();
+		Dump2AY(AY_EXTERNAL,(unsigned int) AYREGS);	//Dump AY buffer to second AY
+		PlayAY();									//Dump AY buffer to internal PSG
 		
-		SetTonePeriod(AY_Channel_A, period);
+		SetTonePeriod(AY_Channel_A, period);		//Set channel A period
 		period += 8;		
 	}
+	
+	SilenceAY();						//Stop any sound!
 }
 ```
 
 To compile you will need to run these two statements from the command line (for Windows OS):
 
 ```bat
-sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel PSG_AY38910BF_Xfunctions.rel Test1.c
-hex2bin -e bin -l 4000 Test1.ihx
-```
-
-<br/>
-
-#### Test1_2AY.c
-
-```c
-#include "../include/PSG_AY38910BF.h"
-#include "../include/PSG_AY38910BF_Xfunctions.h"
-
-#define  HALT	 __asm halt __endasm
-
-void main(void)
-{
-	unsigned int period=0;
-		
-	InitAY();    			//Init library (set default AY and clear Buffer)
-	
-	SetNoisePeriod(20);
-	SetVolume(AY_Channel_A,16); //channel A envelope on
-	SetChannel(AY_Channel_A,ON,ON);
-	SetEnvelopePeriod(1000);
-	SetEnvelope(14);
-
-	while(period<4096)
-	{
-		HALT;
-		Dump2AY(AY_EXTERNAL,(unsigned int) AYREGS);
-		PlayAY();
-		
-		SetTonePeriod(AY_Channel_A, period);
-		period += 8;		
-	}
-}
-```
-
-To compile you will need to run these two statements from the command line (for Windows OS):
-
-```bat
-sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel PSG_AY38910BF_Xfunctions.rel Test1_2AY.c
-hex2bin -e bin -l 4000 Test1_2AY.ihx
+sdcc -mz80 -o build\ --code-loc 0x4020 --data-loc 0xC000 --use-stdout --no-std-crt0 crt_MSX816kROM4000.rel PSG_AY38910BF.rel PSG_AY38910BF_Xfunctions.rel Example03.c
+hex2bin -e bin -l 4000 Example03.ihx
 ```
 
 <br/>

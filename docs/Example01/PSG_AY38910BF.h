@@ -78,21 +78,21 @@ void SelectAY(char port);
 
 
 /* =============================================================================
-InitInternalAY
-Function:		InitInternalAY()
+InitAY
+Function:		InitAY()
 Description:	Initialize the library. 
 				Select as default the internal AY and the library AY buffer. 
 				Also initialize the buffer.
 Input:			-
 Output:			-
 ============================================================================= */
-void InitInternalAY(void);
+void InitAY(void);
 
 
 
 /* =============================================================================
-InitAY
-Function:		InitAY(port, bufferADDR)
+InitAYbuffer
+Function:		InitAYbuffer(port, bufferADDR)
 Description:	Initialize the library. 
 				Sets the default AY and default AY buffer.
 				Also initialize the buffer.
@@ -100,7 +100,7 @@ Input:			[char] AY index port (0xA0 for internal or 0x10 for external)
 				[unsigned int] memory address of AY buffer
 Output:			-
 ============================================================================= */
-void InitAY(char port, unsigned int bufferADDR);
+void InitAYbuffer(char port, unsigned int bufferADDR);
 
 
 

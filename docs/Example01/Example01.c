@@ -6,7 +6,8 @@
 - Compiler: SDCC 4.4
 
 ## Description:
-	Simple example of the PSG_AY38910BF Library (fR3eL Project)
+Perform a simple test of the library, where a sound effect is played using 
+the SOUND function.
 ============================================================================= */
 #include "PSG_AY38910BF.h"
 
@@ -18,7 +19,7 @@ void main(void)
 	unsigned int tone = 0x06AE;					//C Octave 1
 	unsigned int envPeriod = 700;
 	
-	InitInternalAY();    						/* Init library. Set default AY (internal) 
+	InitAY();    								/* Init library. Set default AY (internal) 
 												   and clear Buffer */
 	
 	SOUND(AY_ToneA_fine,tone&0xFF);				//Set channel A fine tune period (8b)

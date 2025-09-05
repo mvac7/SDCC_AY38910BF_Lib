@@ -18,7 +18,7 @@
 C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
 
 This project consists of two libraries that complement each other:
-- **PSG_AY38910BF** Includes only the functions necessary to play songs or effects (requires third-party libraries).
+- **PSG_AY38910BF** Basic functions for initializing, editing and playing sound. It is the basis of the fR3eL Project audio system to be able to reproduce music and effects in game development (requires third-party libraries).
 - **PSG_AY38910BF_eXtended** (optional) Adds specific functions to make it easier to write AY parameters. Requires the PSG_AY38910BF library.
 
 PSG_AY38910BF includes the SOUND function with the same behavior as the command included in MSX BASIC, 
@@ -48,7 +48,13 @@ Enjoy it!
 
 ### PSG_AY38910BF Library
 
-- v1.0  (08/02/2025) update to SDCC (4.1.12) Z80 calling conventions
+- v1.0 (08/02/2025) 
+	- update to SDCC (4.1.12) Z80 calling conventions
+	- Added a function to initialize audio system with different port and buffer (InitAYbuffer)
+	- Added function to clear the AY registers buffer (ClearAY and ClearAYbuffer)
+	- Added two functions to play a given buffer and port (Dump2AY).
+	- Added two functions to mute PSG (SilenceAY and SilenceAYbuffer).
+	- Add a function to select default AY (SelectAY).
 - v0.9b (16/07/2021) First version (Based in AY-3-8910 RT Library)
 
 <br/>
@@ -89,11 +95,11 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 
 ### PSG_AY38910BF Library
 
-| Function | Function Prototype | Description |
+| Namne | Function Prototype | Description |
 | :--- | :--- | :--- |
-| SelectAY  | `SelectAY(char port)` | Select the default AY using the index port value. |
-| InitInternalAY   | `InitInternalAY()` | Initialize the library.<br/>Select as default the internal AY and the library AY buffer.<br/>Also initialize the buffer.  |
-| InitAY    | `InitAY(char port, unsigned int bufferADDR)` | Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer. |
+| SelectAY | `SelectAY(char port)` | Select the default AY using the index port value. |
+| InitAY   | `InitInternalAY()` | Initialize the library.<br/>Select as default the internal AY and the library AY buffer.<br/>Also initialize the buffer.  |
+| InitAY buffer    | `InitAY(char port, unsigned int bufferADDR)` | Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer. |
 | ClearDefAYbuffer | `ClearDefAYbuffer()` | Initializes default buffer of AY registers |
 | ClearAYbuffer    | `ClearAYbuffer(unsigned int bufferADDR)` | Initializes a buffer of AY registers |
 | SOUND     | `SOUND(char reg, char value)` | Writes a value to the AY buffer |
@@ -107,7 +113,7 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 
 ### PSG_AY38910BF_eXtended Library
 
-| Function | Function Prototype | Description |
+| Namne | Function Prototype | Description |
 | :--- | :--- | :--- |
 | SetTonePeriod     | `SetTonePeriod(char channel, unsigned int period)` | Set Tone Period for any channel |
 | SetNoisePeriod    | `SetNoisePeriod(char period)` | Set Noise Period |
@@ -132,7 +138,7 @@ The project includes several examples that I have used to test the library and t
 
 Performs a test of the functions of the PSG_AY38910BF library.
 
-MSX 8K ROM
+Format: MSX 8K ROM
 
 [`Sourcecode`](PSG_AY38910BF/test)
 
@@ -148,9 +154,29 @@ MSX 8K ROM
 
 Performs a test of the functions of the PSG_AY38910BF and PSG_AY38910BF_eXtended libraries.
 
-MSX 16K ROM
+Allows testing of an external AY.
+
+Format: MSX 16K ROM
 
 [`Sourcecode`](PSG_AY38910BF_eXtended/test)
 
 ![TestAY screenshot 1](docs/pics/TESTAY.1.png) 
 ![TestAY screenshot 2](docs/pics/TESTAY.2.png) 
+
+<br/>
+
+---
+
+## References
+
+* [General Instrument AY-3-8910 (wikipedia)](https://en.wikipedia.org/wiki/General_Instrument_AY-3-8910)
+* [GI AY-3-8910 Datasheet (PDF)](http://map.grauw.nl/resources/sound/generalinstrument_ay-3-8910.pdf)
+
+<br/>
+
+### Hardware for a second AY
+
+* [MEGAFLASHROM SCC+](https://www.msxcartridgeshop.com/) by MSX Cartridge Shop
+* [Yamanooto Specs](https://www.msx.org/wiki/The_SCC_Alliance_Yamanooto) (MRC Wiki) by The SCC Alliance
+* [FlashJacks](https://www.retromsx.com/todo-flashjacks/) by Aquijacks
+* [Carnivore2](https://sysadminmosaic.ru/en/msx/carnivore2/carnivore2?redirect=1#sound_settings) by RBSC

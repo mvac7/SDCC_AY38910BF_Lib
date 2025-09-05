@@ -22,7 +22,14 @@ It does not use the BIOS so it can be used to program for ROMs,
 MSX BASIC or MSX-DOS environments. 
  
 ## History of versions (dd/mm/yyyy):
-- v1.0  (08/02/2025) update to SDCC (4.1.12) Z80 calling conventions
+- v1.0 (08/02/2025) 
+	- update to SDCC (4.1.12) Z80 calling conventions
+	- Added a function to initialize audio system with different port and 
+	  buffer (InitAYbuffer)
+	- Added function to clear the AY registers buffer (ClearAY and ClearAYbuffer)
+	- Added two functions to play a given buffer and port (Dump2AY).
+	- Added two functions to mute PSG (SilenceAY and SilenceAYbuffer).
+	- Add a function to select default AY (SelectAY).
 - v0.9b (16/07/2021) First version (Based in AY-3-8910 RT Library)
 ============================================================================= */
 #include "../include/PSG_AY38910BF.h"
@@ -64,24 +71,24 @@ void SelectAY(char port)
 
 
 /* =============================================================================
-InitInternalAY
-Function:		InitInternalAY()
+InitAY
+Function:		InitAY()
 Description:	Initialize the library. 
 				Select as default the internal AY and the library AY buffer. 
 				Also initialize the buffer.
 Input:			-
 Output:			-
 ============================================================================= */
-void InitInternalAY(void)
+void InitAY(void)
 {
-	InitAY(AY_INTERNAL,(unsigned int) AYREGS);
+	InitAYbuffer(AY_INTERNAL,(unsigned int) AYREGS);
 }
 
 
 
 /* =============================================================================
-InitAY
-Function:		InitAY(port, bufferADDR)
+InitAYbuffer
+Function:		InitAYbuffer(port, bufferADDR)
 Description:	Initialize the library. 
 				Sets the default AY and default AY buffer.
 				Also initialize the buffer.
@@ -89,7 +96,7 @@ Input:			[char] AY index port (0xA0 for internal or 0x10 for external)
 				[unsigned int] memory address of AY buffer
 Output:			-
 ============================================================================= */
-void InitAY(char port, unsigned int bufferADDR) __naked
+void InitAYbuffer(char port, unsigned int bufferADDR) __naked
 {
 port;	  		//A
 bufferADDR;		//DE

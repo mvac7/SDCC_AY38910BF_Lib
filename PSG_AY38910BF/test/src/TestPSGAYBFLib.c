@@ -197,7 +197,7 @@ void test_AYLIB_page1(void)
 	
 	PrintLN(">InitInternalAY()");
 	PrintLN(" Set default AY (internal) and\n AYREGS buffer");
-	InitInternalAY();    								//Init library. Set default AY (internal) 
+	InitAY();    								//Init library. Set default AY (internal) 
 	
 	WAIT(100);
 	

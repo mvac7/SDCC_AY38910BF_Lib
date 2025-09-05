@@ -7,8 +7,7 @@
 - Library: fR3eL Project
 
 ## Description:
-	Simple example of the PSG_AY38910BF + PSG_AY38910BF_eXtended Libraries 
-	Plays a sound effect on two AYs (internal and external)
+Example of playing a sound on two AYs simultaneously (internal and external).
 ============================================================================= */
 #include "PSG_AY38910BF.h"
 #include "PSG_AY38910BF_eXtended.h"
@@ -19,14 +18,15 @@ void main(void)
 {
 	unsigned int period=0;
 		
-	InitInternalAY();    				//Init library (set default AY and clear Buffer)
+	InitAY();    						/* Init library. Set default AY (internal) 
+										   and clear Buffer */
 	
 	SetNoisePeriod(20);					//Set noise period
 	EnableEnvelope(AY_Channel_A,ON);	//channel A envelope on
 	EnableTone(AY_Channel_A,ON);		//Enable Tone on channel A
 	EnableNoise(AY_Channel_A,ON);		//Enable Noise on channel A
 	SetEnvelopePeriod(1000);			//Set envelope period
-	SetEnvelope(14);					//Set envelope shape
+	SetEnvelope(AY_ENV_UpperTriangle);	//Set envelope shape
 
 	while(period<4096)
 	{
