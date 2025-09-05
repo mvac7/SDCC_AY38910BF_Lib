@@ -50,7 +50,7 @@
 
 ## 1 Description
 
-C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
+C function libraries that provide a system for playing sound effects and/or music with the internal PSG (AY-3-8910 or compatible) and an external one.
 
 This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Basic functions for initializing, editing and playing sound. It is the basis of the fR3eL Project audio system to be able to reproduce music and effects in game development (requires third-party libraries).
@@ -202,11 +202,11 @@ AY_EXTERNAL | 0x10  | External PSG (MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Ca
 #### 4.2.1 SelectAY
 
 <table>
-<tr><th colspan=2 align="left">SelectAY</th></tr>
-<tr><td colspan="2">Select the default AY using the index port value.</td></tr>
-<tr><th>Function</th><td>SelectAY()</td></tr>
+<tr><th colspan=3 align="left">SelectAY</th></tr>
+<tr><td colspan=3>Select the default AY using the index port value.</td></tr>
+<tr><th>Function</th><td colspan=2>SelectAY(char port)</td></tr>
 <tr><th>Input</th><td>char</td><td>AY index port<br/>(0xA0 for internal or 0x10 for external)</td></tr>
-<tr><th>Output</th><td> - </td></tr>
+<tr><th>Output</th><td colspan=2> - </td></tr>
 </table>
 
 ##### Example:

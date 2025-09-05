@@ -15,7 +15,7 @@
 
 ## Description
 
-C function libraries with functions to play sounds and/or music with the PSG AY-3-8910 or compatibles.
+C function libraries that provide a system for playing sound effects and/or music with the internal PSG (AY-3-8910 or compatible) and an external one.
 
 This project consists of two libraries that complement each other:
 - **PSG_AY38910BF** Basic functions for initializing, editing and playing sound. It is the basis of the fR3eL Project audio system to be able to reproduce music and effects in game development (requires third-party libraries).
@@ -28,12 +28,12 @@ Security control of the I/O port enable bits in the Mixer register.
 On some MSX computers that incorporate an AY-3-8910, they may be damaged if incorrect activation values ​​are written.
 This library reads the port trigger values ​​and persists them, every time the PlayAY function is executed.
 
+You can use this library to develop applications for ROM, MSXBASIC or MSX-DOS environments, 
+using the Small Device C Compiler [(SDCC)](http://sdcc.sourceforge.net/) cross compiler.
+
 You can access the documentation here with [`How to use the library`](docs/HOWTO.md).
 
 These libraries are part of the [MSX fR3eL Project](https://github.com/mvac7/SDCC_MSX_fR3eL).
-
-You can use this library to develop applications for ROM, MSXBASIC or MSX-DOS environments, 
-using the Small Device C Compiler [(SDCC)](http://sdcc.sourceforge.net/) cross compiler.
 
 This project is open source under the [MIT license](LICENSE).<br/>
 You can add part or all of this code in your application development or include it in other libraries/engines.
@@ -85,7 +85,7 @@ This library is designed to work with other libraries that use a buffer of AY re
 Includes a function that safely dumps buffer values ​​to an AY-3-8910 PSG.
 It allows to use the internal PSG of the MSX or an external one (like the one incorporated in the MEGAFLASHROM SCC+, Flashjacks, Yamanooto, Carnivore2 or others).
 
-![AY Sound System](docs/AYlibs.png) 
+![AY Sound System](docs/pics/AYlibs.png) 
 
 <br/>
 
@@ -98,8 +98,8 @@ It allows to use the internal PSG of the MSX or an external one (like the one in
 | Namne | Function Prototype | Description |
 | :--- | :--- | :--- |
 | SelectAY | `SelectAY(char port)` | Select the default AY using the index port value. |
-| InitAY   | `InitInternalAY()` | Initialize the library.<br/>Select as default the internal AY and the library AY buffer.<br/>Also initialize the buffer.  |
-| InitAY buffer    | `InitAY(char port, unsigned int bufferADDR)` | Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer. |
+| InitAY   | `InitAY()` | Initialize the library.<br/>Select as default the internal AY and the library AY buffer.<br/>Also initialize the buffer.  |
+| InitAYbuffer    | `InitAYbuffer(char port, unsigned int bufferADDR)` | Initialize the library.<br/>Sets the default AY and default AY buffer.<br/>Also initialize the buffer. |
 | ClearDefAYbuffer | `ClearDefAYbuffer()` | Initializes default buffer of AY registers |
 | ClearAYbuffer    | `ClearAYbuffer(unsigned int bufferADDR)` | Initializes a buffer of AY registers |
 | SOUND     | `SOUND(char reg, char value)` | Writes a value to the AY buffer |
